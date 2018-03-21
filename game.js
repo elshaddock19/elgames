@@ -1,14 +1,326 @@
-//Lisa Liao
-//Team ELGames
-//Mod 1: changed grid size to 16 x 10
-//Mod 2: changed bead color to green when bead is clicked
-//Mod 3: added "yes" text over bead when bead is clicked
-//Mod 4: text in bead disappears when mouse enters that bead
-//Mod 5: removed borders
-//Mod 6: changed background color to opaque white
-//Mod 7: changed grid color to light blue
+// Edward Shaddock
+// ELGames
+// Mod 1: Changed click color from black to random
+// Mod 2: Changed size of grid to 5 x 5
+// Mod 3: Added shadow, appears when exiting grid, changed color from black to random
+// Mod 4: Exiting bead changes background color from white to random
+// Mod 5: Added glyph of team logo to bead click
+// Mod 6: Added assignment name to status line
+// Mod 7: Added click sound effect
+
+
 
 // game.js for Perlenspiel 3.2
+
+// The "use strict" directive in the following line is important. Don't alter or remove it!
+"use strict";
+
+// The following comment lines are for JSLint/JSHint. Don't alter or remove them!
+
+/*jslint nomen: true, white: true */
+/*global PS */
+
+/*
+This is a template for creating new Perlenspiel games.
+All event-handling functions are commented out by default.
+Uncomment and add code to the event handlers required by your project.
+*/
+
+/*
+PS.init( system, options )
+Called once after engine is initialized but before event-polling begins.
+[system] = an object containing engine and platform information; see API documentation for details.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.init() event handler:
+
+var shadowStatus = false;
+
+PS.init = function( system, options ) {
+	// Uncomment the following code line to verify operation:
+
+	// PS.debug( "PS.init() called\n" );
+
+	// This function should normally begin with a call to PS.gridSize( x, y )
+	// where x and y are the desired initial dimensions of the grid.
+	// Call PS.gridSize() FIRST to avoid problems!
+	// The sample call below sets the grid to the default dimensions (8 x 8).
+	// Uncomment the following code line and change the x and y parameters as needed.
+
+	PS.gridSize( 5, 5 );
+
+	// This is also a good place to display your game title or a welcome message
+	// in the status line above the grid.
+	// Uncomment the following code line and change the string parameter as needed.
+
+	PS.statusText( "ED's Modded Toy" );
+
+	// Add any other initialization code you need here.
+};
+
+
+
+/*
+PS.touch ( x, y, data, options )
+Called when the mouse button is clicked on a bead, or when a bead is touched.
+It doesn't have to do anything.
+[x] = zero-based x-position of the bead on the grid.
+[y] = zero-based y-position of the bead on the grid.
+[data] = the data value assigned to this bead by a call to PS.data(); default = 0.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.touch() event handler:
+
+
+
+PS.touch = function( x, y, data, options ) {
+	// Uncomment the following code line to inspect x/y parameters:
+
+	//PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
+
+	// Add code here for mouse clicks/touches over a bead.
+    var r, g, b;
+
+    r = PS.random(256) -1; // random red 0-255
+    g = PS.random(256) -1; // random green
+    b = PS.random(256) - 1; // random blue
+
+    PS.color( x, y, r, g, b);
+    PS.audioPlay( "fx_click" );
+    PS.glyph( x, y, "EL" );
+};
+
+
+
+/*
+PS.release ( x, y, data, options )
+Called when the mouse button is released over a bead, or when a touch is lifted off a bead
+It doesn't have to do anything
+[x] = zero-based x-position of the bead on the grid
+[y] = zero-based y-position of the bead on the grid
+[data] = the data value assigned to this bead by a call to PS.data(); default = 0.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.release() event handler:
+
+/*
+
+PS.release = function( x, y, data, options ) {
+	// Uncomment the following code line to inspect x/y parameters:
+
+	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
+
+	// Add code here for when the mouse button/touch is released over a bead.
+};
+
+*/
+
+/*
+PS.enter ( x, y, button, data, options )
+Called when the mouse/touch enters a bead.
+It doesn't have to do anything.
+[x] = zero-based x-position of the bead on the grid.
+[y] = zero-based y-position of the bead on the grid.
+[data] = the data value assigned to this bead by a call to PS.data(); default = 0.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.enter() event handler:
+
+/*
+
+PS.enter = function( x, y, data, options ) {
+	// Uncomment the following code line to inspect x/y parameters:
+
+	// PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
+
+	// Add code here for when the mouse cursor/touch enters a bead.
+};
+
+*/
+
+/*
+PS.exit ( x, y, data, options )
+Called when the mouse cursor/touch exits a bead.
+It doesn't have to do anything.
+[x] = zero-based x-position of the bead on the grid.
+[y] = zero-based y-position of the bead on the grid.
+[data] = the data value associated with this bead, 0 if none has been set.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.exit() event handler:
+
+
+
+PS.exit = function( x, y, data, options ) {
+	// Uncomment the following code line to inspect x/y parameters:
+
+	// PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
+
+	// Add code here for when the mouse cursor/touch exits a bead.
+    var  r, g, b;
+
+    r = PS.random(256) -1; // random red 0-255
+    g = PS.random(256) -1; // random green
+    b = PS.random(256) - 1; // random blue
+    PS.gridColor( r, g, b ); // set grid color
+
+    // Report grid color in status line
+    //PS.statusText("r = " + r + ", g = " + g + ", b = " + b + "\n");
+
+
+};
+
+
+
+/*
+PS.exitGrid ( options )
+Called when the mouse cursor/touch exits the grid perimeter.
+It doesn't have to do anything.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.exitGrid() event handler:
+
+
+
+PS.exitGrid = function( options ) {
+	// Uncomment the following code line to verify operation:
+
+	//PS.debug( "PS.exitGrid() called\n" );
+
+	// Add code here for when the mouse cursor/touch moves off the grid.
+    var r, g, b;
+
+    // If shadow is visible, hide it
+
+    if ( shadowStatus ){
+        shadowStatus = false;
+        PS.gridShadow( false );
+        //PS.statusText( "Grid shadow disabled" );
+    }
+
+    // Otherwise show with random color
+    // Max color value is 127 to insure
+    // visibility against white grid
+
+    else {
+        shadowStatus = true;
+        r = PS.random(128) -1; // random red 0-127
+        g = PS.random(128) -1; // random green
+        b = PS.random(128) - 1; // random blue
+        PS.gridShadow( true, r, g, b );
+
+        // Report shadow color in status line
+
+        //PS.statusText( "r = " + r + ", g = " + g + ", b = " + b + "\n");
+    }
+};
+
+
+
+/*
+PS.keyDown ( key, shift, ctrl, options )
+Called when a key on the keyboard is pressed.
+It doesn't have to do anything.
+[key] = ASCII code of the pressed key, or one of the PS.KEY constants documented at:
+http://users.wpi.edu/~bmoriarty/ps/constants.html
+[shift] = true if shift key is held down, else false.
+[ctrl] = true if control key is held down, else false.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.keyDown() event handler:
+
+/*
+
+PS.keyDown = function( key, shift, ctrl, options ) {
+	// Uncomment the following code line to inspect first three parameters:
+
+	// PS.debug( "PS.keyDown(): key=" + key + ", shift=" + shift + ", ctrl=" + ctrl + "\n" );
+
+	// Add code here for when a key is pressed.
+};
+
+*/
+
+/*
+PS.keyUp ( key, shift, ctrl, options )
+Called when a key on the keyboard is released.
+It doesn't have to do anything.
+[key] = ASCII code of the pressed key, or one of the PS.KEY constants documented at:
+http://users.wpi.edu/~bmoriarty/ps/constants.html
+[shift] = true if shift key is held down, else false.
+[ctrl] = true if control key is held down, else false.
+[options] = an object with optional parameters; see API documentation for details.
+*/
+
+// Uncomment the following BLOCK to expose PS.keyUp() event handler:
+
+/*
+
+PS.keyUp = function( key, shift, ctrl, options ) {
+	// Uncomment the following code line to inspect first three parameters:
+
+	// PS.debug( "PS.keyUp(): key=" + key + ", shift=" + shift + ", ctrl=" + ctrl + "\n" );
+
+	// Add code here for when a key is released.
+};
+
+*/
+
+/*
+PS.input ( sensors, options )
+Called when an input device event (other than mouse/touch/keyboard) is detected.
+It doesn't have to do anything.
+[sensors] = an object with sensor information; see API documentation for details.
+[options] = an object with optional parameters; see API documentation for details.
+NOTE: Mouse wheel events occur ONLY when the cursor is positioned over the grid.
+*/
+
+// Uncomment the following BLOCK to expose PS.input() event handler:
+
+/*
+
+PS.input = function( sensors, options ) {
+	// Uncomment the following code lines to inspect first parameter:
+
+//	 var device = sensors.wheel; // check for scroll wheel
+//
+//	 if ( device ) {
+//	   PS.debug( "PS.input(): " + device + "\n" );
+//	 }
+
+	// Add code here for when an input event is detected.
+};
+
+*/
+
+/*
+PS.shutdown ( options )
+Called when the browser window running Perlenspiel is about to close.
+It doesn't have to do anything.
+[options] = an object with optional parameters; see API documentation for details.
+NOTE: This event is only used for applications utilizing server communication.
+*/
+
+// Uncomment the following BLOCK to expose PS.shutdown() event handler:
+
+/*
+
+PS.shutdown = function( options ) {
+	// Uncomment the following code line to verify operation:
+
+	// PS.debug( "Daisy, Daisy ...\n" );
+
+	// Add code here for when Perlenspiel is about to close.
+};
+
+*/
 
 /*
 Perlenspiel is a scheme by Professor Moriarty (bmoriarty@wpi.edu).
@@ -28,244 +340,3 @@ GNU Lesser General Public License for more details.
 You may have received a copy of the GNU Lesser General Public License
 along with Perlenspiel. If not, see <http://www.gnu.org/licenses/>.
 */
-
-// The following comment lines are for JSLint. Don't remove them!
-
-/*jslint nomen: true, white: true */
-/*global PS */
-
-// This is a template for creating new Perlenspiel games
-
-// All of the functions below MUST exist, or the engine will complain!
-
-// PS.init( system, options )
-// Initializes the game
-// This function should normally begin with a call to PS.gridSize( x, y )
-// where x and y are the desired initial dimensions of the grid
-// [system] = an object containing engine and platform information; see documentation for details
-// [options] = an object with optional parameters; see documentation for details
-
-PS.init = function( system, options ) {
-	"use strict";
-
-	// Use PS.gridSize( x, y ) to set the grid to
-	// the initial dimensions you want (32 x 32 maximum)
-	// Do this FIRST to avoid problems!
-	// Otherwise you will get the default 8x8 grid
-
-	PS.gridSize( 16, 10 );
-	
-	PS.gridColor( PS.gridColor(100, 150, 200)); // blue-ish
-
-	PS.statusColor( PS.COLOR_WHITE );
-	PS.statusText( "Click anywhere your heart desires" );
-
-	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
-
-    // set radius to 25 for all beads
-    PS.radius(PS.ALL, PS.ALL, 25 );
-
-	// set background color
-    PS.bgAlpha( PS.ALL, PS.ALL, PS.ALPHA_OPAQUE ); // opaque
-    PS.bgColor( PS.ALL, PS.ALL, PS.COLOR_WHITE); // background
-
-    PS.border( PS.ALL, PS.ALL, 0 ); // no borders
-
-    // one second fader to all beads
-    //PS.fade( PS.ALL, PS.ALL, 60 );
-};
-
-// PS.touch ( x, y, data, options )
-// Called when the mouse button is clicked on a bead, or when a bead is touched
-// It doesn't have to do anything
-// [x] = zero-based x-position of the bead on the grid
-// [y] = zero-based y-position of the bead on the grid
-// [data] = the data value associated with this bead, 0 if none has been set
-// [options] = an object with optional parameters; see documentation for details
-
-PS.touch = function( x, y, data, options ) {
-	"use strict";
-	var next;
-	//var text2;
-
-	// Uncomment the following line to inspect parameters
-	// PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
-	
-	// Change color of touched bed
-	// The default [data] is 0, which equals PS.COLOR_BLACK
-
-	PS.color( x, y, data ); // set color and text
-	if ( data === PS.color(x, y, 60, 180, 100)) {
-		next = PS.color(x, y, PS.COLOR_WHITE);
-	} else {
-		next = PS.color(x, y, 60, 180, 100);
-	}
-	PS.data( x, y, next ); // remember color and text
-
-    PS.glyph( x, y, "yes" );
-
-    // Play click sound
-
-	PS.audioPlay( "fx_click" );
-
-	// Add code here for mouse clicks/touches over a bead
-};
-
-// PS.release ( x, y, data, options )
-// Called when the mouse button is released over a bead, or when a touch is lifted off a bead
-// It doesn't have to do anything
-// [x] = zero-based x-position of the bead on the grid
-// [y] = zero-based y-position of the bead on the grid
-// [data] = the data value associated with this bead, 0 if none has been set
-// [options] = an object with optional parameters; see documentation for details
-
-PS.release = function( x, y, data, options ) {
-	"use strict";
-
-	// Uncomment the following line to inspect parameters
-	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
-
-	// Add code here for when the mouse button/touch is released over a bead
-};
-
-// PS.enter ( x, y, button, data, options )
-// Called when the mouse/touch enters a bead
-// It doesn't have to do anything
-// [x] = zero-based x-position of the bead on the grid
-// [y] = zero-based y-position of the bead on the grid
-// [data] = the data value associated with this bead, 0 if none has been set
-// [options] = an object with optional parameters; see documentation for details
-
-PS.enter = function( x, y, data, options ) {
-	"use strict";
-	var next;
-	// Uncomment the following line to inspect parameters
-	// PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
-
-	// Add code here for when the mouse cursor/touch enters a bead
-	//PS.color(x, y, PS.COLOR_WHITE);
-	PS.gridShadow(true, PS.COLOR_GRAY);
-	PS.glyph( x, y, "" );
-};
-
-// PS.exit ( x, y, data, options )
-// Called when the mouse cursor/touch exits a bead
-// It doesn't have to do anything
-// [x] = zero-based x-position of the bead on the grid
-// [y] = zero-based y-position of the bead on the grid
-// [data] = the data value associated with this bead, 0 if none has been set
-// [options] = an object with optional parameters; see documentation for details
-
-PS.exit = function( x, y, data, options ) {
-	"use strict";
-
-	// Uncomment the following line to inspect parameters
-	// PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
-
-	// Add code here for when the mouse cursor/touch exits a bead
-	//PS.color(x, y, PS.COLOR_WHITE);
-    //PS.glyph( x, y, "" );
-    PS.gridShadow(false, PS.COLOR_WHITE);
-};
-
-// PS.exitGrid ( options )
-// Called when the mouse cursor/touch exits the grid perimeter
-// It doesn't have to do anything
-// [options] = an object with optional parameters; see documentation for details
-
-PS.exitGrid = function( options ) {
-	"use strict";
-
-	// Uncomment the following line to verify operation
-	// PS.debug( "PS.exitGrid() called\n" );
-
-	// Add code here for when the mouse cursor/touch moves off the grid
-};
-
-// PS.keyDown ( key, shift, ctrl, options )
-// Called when a key on the keyboard is pressed
-// It doesn't have to do anything
-// [key] = ASCII code of the pressed key, or one of the following constants:
-// Arrow keys = PS.ARROW_UP, PS.ARROW_DOWN, PS.ARROW_LEFT, PS.ARROW_RIGHT
-// Function keys = PS.F1 through PS.F1
-// [shift] = true if shift key is held down, else false
-// [ctrl] = true if control key is held down, else false
-// [options] = an object with optional parameters; see documentation for details
-
-PS.keyDown = function( key, shift, ctrl, options ) {
-	"use strict";
-
-	// Uncomment the following line to inspect parameters
-	//	PS.debug( "DOWN: key = " + key + ", shift = " + shift + "\n" );
-
-	// Add code here for when a key is pressed
-
-};
-
-// PS.keyUp ( key, shift, ctrl, options )
-// Called when a key on the keyboard is released
-// It doesn't have to do anything
-// [key] = ASCII code of the pressed key, or one of the following constants:
-// Arrow keys = PS.ARROW_UP, PS.ARROW_DOWN, PS.ARROW_LEFT, PS.ARROW_RIGHT
-// Function keys = PS.F1 through PS.F12
-// [shift] = true if shift key is held down, false otherwise
-// [ctrl] = true if control key is held down, false otherwise
-// [options] = an object with optional parameters; see documentation for details
-
-PS.keyUp = function( key, shift, ctrl, options ) {
-	"use strict";
-
-	// Uncomment the following line to inspect parameters
-	// PS.debug( "PS.keyUp(): key = " + key + ", shift = " + shift + ", ctrl = " + ctrl + "\n" );
-
-	// Add code here for when a key is released
-};
-
-// PS.swipe ( data, options )
-// Called when a mouse/finger swipe across the grid is detected
-// It doesn't have to do anything
-// [data] = an object with swipe information; see documentation for details
-// [options] = an object with optional parameters; see documentation for details
-
-PS.swipe = function( data, options ) {
-	"use strict";
-
-	// Uncomment the following block to inspect parameters
-
-	/*
-	 var len, i, ev;
-	 PS.debugClear();
-	 PS.debug( "PS.swipe(): start = " + data.start + ", end = " + data.end + ", dur = " + data.duration + "\n" );
-	 len = data.events.length;
-	 for ( i = 0; i < len; i += 1 ) {
-	 ev = data.events[ i ];
-	 PS.debug( i + ": [x = " + ev.x + ", y = " + ev.y + ", start = " + ev.start + ", end = " + ev.end +
-	 ", dur = " + ev.duration + "]\n");
-	 }
-	 */
-
-	// Add code here for when an input event is detected
-};
-
-// PS.input ( sensors, options )
-// Called when an input device event (other than mouse/touch/keyboard) is detected
-// It doesn't have to do anything
-// [sensors] = an object with sensor information; see documentation for details
-// [options] = an object with optional parameters; see documentation for details
-
-PS.input = function( sensors, options ) {
-	"use strict";
-
-	// Uncomment the following block to inspect parameters
-	/*
-	PS.debug( "PS.input() called\n" );
-	var device = sensors.wheel; // check for scroll wheel
-	if ( device )
-	{
-		PS.debug( "sensors.wheel = " + device + "\n" );
-	}
-	*/
-	
-	// Add code here for when an input event is detected
-};
-
