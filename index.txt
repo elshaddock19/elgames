@@ -6,5 +6,7 @@
 
 <p>Edward Shaddock (elshaddock) and Lisa Liao (lliao)</p>
 
+<p><a href="https://www.w3schools.com/html/">Visit our HTML tutorial</a></p>
+
 </body>
 </html>
