@@ -15,16 +15,16 @@ PS.init = function( system, options ) {
 
 	var r, g, b, r2, g2, b2;
 
-	r = PS.random(128, 256)-1;
-	g = PS.random(128, 256)-1;
-	b = PS.random(128, 256)-1;
+	r = PS.random(256)-1;
+	g = PS.random(256)-1;
+	b = PS.random(256)-1;
 
     r2 = PS.random(256)-1;
     g2 = PS.random(256)-1;
     b2 = PS.random(256)-1;
 
 	PS.gridSize( 5, 5 );
-	PS.gridColor(r, g, b);
+	PS.gridColor(255, 225, 225);
     PS.color(PS.ALL, PS.ALL, 255, 255, 255);
 	PS.statusColor( PS.COLOR_BLACK );
 	PS.statusText( "Puzzle" );
