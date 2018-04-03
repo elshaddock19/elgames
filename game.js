@@ -133,7 +133,7 @@ PS.enter = function( x, y, data, options ) {
             PS.statusText("You Win!");
             PS.audioPlay("fx_tada");
     }
-    else if(mouseDown == true && PS.color(x,y) == PS.COLOR_BLACK)
+    else if(mouseDown == true && PS.color(PS.ALL,PS.ALL) !== rgbTriplet_red )
     {
         PS.statusText("You Lose, Please Refresh Page");
         PS.audioPlay("fx_uhoh");
