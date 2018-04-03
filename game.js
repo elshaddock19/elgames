@@ -6,7 +6,7 @@
 /*global PS */
 
 var mouseDown = false;
-var rgbTriplet_red = (255 * 65536) + (20 * 256) + 20;
+var rgbTriplet_red = (255 * 65536) + (0 * 256) + 0;
 var rgbTriplet_white = (255 * 65536) + (255 * 256) + 255;
 var rgbTriplet_gray = (225 * 65536) + (225 * 256) + 225;
 
@@ -44,7 +44,7 @@ PS.touch = function( x, y, data, options ) {
     }
     else if(PS.color(x,y) == rgbTriplet_red) // if red, turn gray <- DOES NOT WORK
     {
-        PS.color(x, y, PS.COLOR(x, y, PS.color(225, 225, 225)));
+        PS.color(x, y, PS.color(x, y, 225, 225, 225));
     }
     else if(PS.color(x,y) == rgbTriplet_gray) // if gray, turn red
     {
@@ -71,7 +71,11 @@ PS.enter = function( x, y, data, options ) {
     {
         PS.color(x, y, PS.COLOR_RED);
     }
-    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red <- DOES NOT WORK
+    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // enables dragging to remove red
+    {
+        PS.color(x, y, PS.COLOR_WHITE);
+    }
+    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red
     {
         PS.color(x, y, PS.COLOR_GRAY);
     }
@@ -90,7 +94,11 @@ PS.exit = function( x, y, data, options ) {
     {
         PS.color(x, y, PS.COLOR_RED);
     }
-    else if(mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red?
+    else if(mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red
+    {
+        PS.color(x, y, PS.COLOR_RED);
+    }
+    else if(mouseDown == true && PS.color(x,y) == rgbTriplet_gray) // changes first tile back to white
     {
         PS.color(x, y, PS.COLOR_WHITE);
     }
