@@ -27,22 +27,49 @@ PS.init = function( system, options ) {
 	PS.gridColor(255, 225, 225);
     PS.color(PS.ALL, PS.ALL, 255, 255, 255);
 	PS.statusColor( PS.COLOR_BLACK );
-	PS.statusText( "Puzzle" );
+	PS.statusText( "Turn the grid to one color!" );
 	PS.border( PS.ALL, PS.ALL, 0 ); // no border
+    PS.color(0,4,PS.COLOR_RED);
+    PS.color(1, 0, PS.COLOR_RED);
+    PS.color(2,0,PS.COLOR_RED);
+    PS.color(3, 0, PS.COLOR_RED);
+    PS.color(2,3,PS.COLOR_RED);
 
-    var version = PS.random(2);
+    PS.color(4, 0, PS.COLOR_RED);
+
+    //PS.color(0,2,PS.COLOR_RED);
+
+    var version = PS.random(4);
 
     if (version == 1)
     {
-        PS.color(1, 1, PS.COLOR_BLACK);
+        PS.color(2, 2, PS.COLOR_BLACK);
+        PS.glyph(0, 0,  "Start");
+        PS.glyph(2, 2, "END");
+        PS.glyphColor(2, 2, PS.COLOR_WHITE);
+
+
     }
     if (version == 2)
     {
-        PS.color(2, 2, PS.COLOR_BLACK);
+        PS.color(4, 4, PS.COLOR_BLACK);
+        PS.glyph(0, 0, "Start");
+        PS.glyph(4, 4,  "END");
+        PS.glyphColor(4, 4, PS.COLOR_WHITE);
     }
     if (version == 3)
     {
-        PS.color(3, 3, PS.COLOR_BLACK);
+        PS.color(2, 4, PS.COLOR_BLACK);
+        PS.glyph(0, 0, "Start");
+        PS.glyphColor(2, 4, PS.COLOR_WHITE);
+        PS.glyph(2, 4,  "END");
+    }
+    if (version == 4)
+    {
+        PS.color(3, 1, PS.COLOR_BLACK);
+        PS.glyph(0, 0, "Start");
+        PS.glyphColor(3, 1, PS.COLOR_WHITE);
+        PS.glyph(3, 1,  "END");
     }
 };
 
@@ -68,6 +95,11 @@ PS.touch = function( x, y, data, options ) {
 PS.release = function( x, y, data, options ) {
 	"use strict";
 	mouseDown = false;
+	if(mouseDown == false){
+	    PS.statusText("You Lose, Please Refresh Page");
+        PS.audioPlay("fx_uhoh");
+        PS.color(PS.ALL, PS.ALL, 0, 255, 0);
+    }
 
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
 };
@@ -85,13 +117,23 @@ PS.enter = function( x, y, data, options ) {
     }
     else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // enables dragging to remove red
     {
-        PS.color(x, y, PS.COLOR_WHITE);
+        //PS.color(x, y, PS.COLOR_WHITE);
+        PS.statusText("You Lose, Please Refresh Page");
+        PS.audioPlay("fx_uhoh");
+        PS.color(PS.ALL, PS.ALL, 0, 255, 0);
+
     }
     else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red
     {
         PS.color(x, y, PS.COLOR_GRAY);
     }
-        //PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
+    else if(mouseDown == true && PS.color(x,y) == PS.COLOR_BLACK){
+            PS.statusText("You Win!");
+            PS.audioPlay("fx_tada");
+            PS.color(x, y, PS.COLOR_RED)
+
+    }
+       // PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
 
 };
 
@@ -115,7 +157,7 @@ PS.exit = function( x, y, data, options ) {
         PS.color(x, y, PS.COLOR_WHITE);
     }
 
-    // PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
+    //PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
 
 };
 
