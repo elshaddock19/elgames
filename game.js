@@ -6,6 +6,9 @@
 /*global PS */
 
 var mouseDown = false;
+var rgbTriplet_red = (255 * 65536) + (20 * 256) + 20;
+var rgbTriplet_white = (255 * 65536) + (255 * 256) + 255;
+var rgbTriplet_gray = (225 * 65536) + (225 * 256) + 225;
 
 PS.init = function( system, options ) {
 	"use strict";
@@ -27,47 +30,45 @@ PS.init = function( system, options ) {
     PS.color(PS.ALL, PS.ALL, 255, 255, 255);
 	PS.statusColor( PS.COLOR_BLACK );
 	PS.statusText( "Puzzle" );
-
-    PS.border( PS.ALL, PS.ALL, 0 ); // no border
+	PS.border( PS.ALL, PS.ALL, 0 ); // no border
 
 };
 
 PS.touch = function( x, y, data, options ) {
 	"use strict";
-
-    PS.color(x, y, PS.COLOR_RED);
-
     mouseDown = true;
 
-    /*
-    PS.color( x, y, data ); // set color and text
-    if ( data === PS.color(x, y, 150, 170, 100)) {
-        next = PS.color(x, y, 75, 170, 156);
-    } else {
-        next = PS.color(x, y, 150, 170, 100);
+    if(PS.color(x,y) == rgbTriplet_white)
+    {
+        PS.color(x, y, PS.COLOR_RED);
     }
-    PS.data( x, y, next ); // remember color and text
-    */
+    else if(PS.color(x,y) == rgbTriplet_red)
+    {
+        PS.color(x, y, PS.COLOR_WHITE);
+    }
+    else if(PS.color(x,y) == rgbTriplet_gray)
+    {
+        PS.color(x, y, PS.COLOR_RED);
+    }
 };
 
 
 PS.release = function( x, y, data, options ) {
 	"use strict";
-
 	mouseDown = false;
 
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
-
 };
 
 PS.enter = function( x, y, data, options ) {
 	"use strict";
 	//var next;
-    if(mouseDown == false && PS.color(x,y) == (255 * 65536) + (255 * 256) + 255) {
+    if(mouseDown == false && PS.color(x,y) == rgbTriplet_white)
+    {
         PS.color(x, y, 225, 225, 225);
-    } else if(mouseDown == false && PS.color(x,y) == (255 * 65536) + (20 * 256) + 20) {
-        PS.color(x, y, PS.COLOR_RED);
-    } else if (mouseDown == true) {
+    }
+    else if (mouseDown == true)
+    {
         PS.color(x, y, PS.COLOR_RED);
     }
         //PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
@@ -76,14 +77,22 @@ PS.enter = function( x, y, data, options ) {
 
 PS.exit = function( x, y, data, options ) {
     "use strict";
-    if(mouseDown == false && PS.color(x,y) == (225 * 65536) + (225 * 256) + 225) {
-        PS.color(x, y, 255, 255, 255); // YELLOW THEME
-    } else if(mouseDown == false && PS.color(x,y) == (255 * 65536) + (20 * 256) + 20){
-        PS.color(x, y, PS.COLOR_RED);
-    } else if(mouseDown == true){
-        PS.color(x, y, PS.COLOR_RED);
-    } else {
 
+    if(mouseDown == false && PS.color(x,y) == rgbTriplet_gray)
+    {
+        PS.color(x, y, 255, 255, 255);
+    }
+    else if(mouseDown == false && PS.color(x,y) == rgbTriplet_red)
+    {
+        PS.color(x, y, PS.COLOR_RED);
+    }
+    else if(mouseDown == true)
+    {
+        PS.color(x, y, PS.COLOR_RED);
+    }
+    else if(mouseDown == true && PS.color(x,y) == rgbTriplet_red)
+    {
+        PS.color(x, y, PS.COLOR_WHITE);
     }
 
     // PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
