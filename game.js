@@ -27,7 +27,7 @@ PS.init = function( system, options ) {
 	PS.gridColor(255, 225, 225);
     PS.color(PS.ALL, PS.ALL, 255, 255, 255);
 	PS.statusColor( PS.COLOR_BLACK );
-	PS.statusText( "Turn the grid to one color!" );
+	PS.statusText( "Drag to fill the Grid!" );
 	PS.border( PS.ALL, PS.ALL, 0 ); // no border
     PS.color(0,4,PS.COLOR_RED);
     PS.color(1, 0, PS.COLOR_RED);
@@ -95,10 +95,10 @@ PS.touch = function( x, y, data, options ) {
 PS.release = function( x, y, data, options ) {
 	"use strict";
 	mouseDown = false;
-	if(mouseDown == false){
+	if(mouseDown == false && PS.color(PS.ALL, PS.ALL) !== PS.COLOR_RED){
 	    PS.statusText("You Lose, Please Refresh Page");
         PS.audioPlay("fx_uhoh");
-        PS.color(PS.ALL, PS.ALL, 0, 255, 0);
+        PS.color(PS.ALL, PS.ALL, 150, 150, 255);
     }
 
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
@@ -120,18 +120,16 @@ PS.enter = function( x, y, data, options ) {
         //PS.color(x, y, PS.COLOR_WHITE);
         PS.statusText("You Lose, Please Refresh Page");
         PS.audioPlay("fx_uhoh");
-        PS.color(PS.ALL, PS.ALL, 0, 255, 0);
+        PS.color(PS.ALL, PS.ALL, 150, 150, 255);
 
     }
     else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red
     {
         PS.color(x, y, PS.COLOR_GRAY);
     }
-    else if(mouseDown == true && PS.color(x,y) == PS.COLOR_BLACK){
+    else if(mouseDown == true && PS.color(PS.ALL, PS.ALL) == rgbTriplet_red){
             PS.statusText("You Win!");
             PS.audioPlay("fx_tada");
-            PS.color(x, y, PS.COLOR_RED)
-
     }
        // PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
 
