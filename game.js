@@ -115,7 +115,7 @@ PS.enter = function( x, y, data, options ) {
     {
         PS.color(x, y, PS.COLOR_RED);
     }
-    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // enables dragging to remove red
+    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red)
     {
         //PS.color(x, y, PS.COLOR_WHITE);
         PS.statusText("You Lose, Please Refresh Page");
@@ -125,11 +125,19 @@ PS.enter = function( x, y, data, options ) {
     }
     else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red
     {
-        PS.color(x, y, PS.COLOR_GRAY);
+        PS.statusText("You Lose, Please Refresh Page");
+        PS.audioPlay("fx_uhoh");
+        PS.color(PS.ALL, PS.ALL, 150, 150, 255);
     }
     else if(mouseDown == true && PS.color(PS.ALL, PS.ALL) == rgbTriplet_red){
             PS.statusText("You Win!");
             PS.audioPlay("fx_tada");
+    }
+    else if(mouseDown == true && PS.color(x,y) == PS.COLOR_BLACK)
+    {
+        PS.statusText("You Lose, Please Refresh Page");
+        PS.audioPlay("fx_uhoh");
+        PS.color(PS.ALL, PS.ALL, 150, 150, 255);
     }
        // PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
 
