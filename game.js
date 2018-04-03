@@ -30,6 +30,20 @@ PS.init = function( system, options ) {
 	PS.statusText( "Puzzle" );
 	PS.border( PS.ALL, PS.ALL, 0 ); // no border
 
+    var version = PS.random(2);
+
+    if (version == 1)
+    {
+        PS.color(1, 1, PS.COLOR_BLACK);
+    }
+    if (version == 2)
+    {
+        PS.color(2, 2, PS.COLOR_BLACK);
+    }
+    if (version == 3)
+    {
+        PS.color(3, 3, PS.COLOR_BLACK);
+    }
 };
 
 PS.touch = function( x, y, data, options ) {
