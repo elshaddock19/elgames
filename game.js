@@ -38,15 +38,15 @@ PS.touch = function( x, y, data, options ) {
 	"use strict";
     mouseDown = true;
 
-    if(PS.color(x,y) == rgbTriplet_white)
+    if(PS.color(x,y) == rgbTriplet_white) // if white, turn red
     {
         PS.color(x, y, PS.COLOR_RED);
     }
-    else if(PS.color(x,y) == rgbTriplet_red)
+    else if(PS.color(x,y) == rgbTriplet_red) // if red, turn gray <- DOES NOT WORK
     {
-        PS.color(x, y, PS.COLOR_WHITE);
+        PS.color(x, y, PS.COLOR(x, y, PS.color(225, 225, 225)));
     }
-    else if(PS.color(x,y) == rgbTriplet_gray)
+    else if(PS.color(x,y) == rgbTriplet_gray) // if gray, turn red
     {
         PS.color(x, y, PS.COLOR_RED);
     }
@@ -63,13 +63,17 @@ PS.release = function( x, y, data, options ) {
 PS.enter = function( x, y, data, options ) {
 	"use strict";
 	//var next;
-    if(mouseDown == false && PS.color(x,y) == rgbTriplet_white)
+    if(mouseDown == false && PS.color(x,y) == rgbTriplet_white) // turns bead gray when hovering over
     {
         PS.color(x, y, 225, 225, 225);
     }
-    else if (mouseDown == true)
+    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_white) // enables dragging
     {
         PS.color(x, y, PS.COLOR_RED);
+    }
+    else if (mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red <- DOES NOT WORK
+    {
+        PS.color(x, y, PS.COLOR_GRAY);
     }
         //PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
 
@@ -78,19 +82,15 @@ PS.enter = function( x, y, data, options ) {
 PS.exit = function( x, y, data, options ) {
     "use strict";
 
-    if(mouseDown == false && PS.color(x,y) == rgbTriplet_gray)
+    if(mouseDown == false && PS.color(x,y) == rgbTriplet_gray) // removes gray from previous bead
     {
         PS.color(x, y, 255, 255, 255);
     }
-    else if(mouseDown == false && PS.color(x,y) == rgbTriplet_red)
+    else if(mouseDown == false && PS.color(x,y) == rgbTriplet_red) // keeps red beads
     {
         PS.color(x, y, PS.COLOR_RED);
     }
-    else if(mouseDown == true)
-    {
-        PS.color(x, y, PS.COLOR_RED);
-    }
-    else if(mouseDown == true && PS.color(x,y) == rgbTriplet_red)
+    else if(mouseDown == true && PS.color(x,y) == rgbTriplet_red) // dragging to remove red?
     {
         PS.color(x, y, PS.COLOR_WHITE);
     }
