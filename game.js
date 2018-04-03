@@ -24,7 +24,7 @@ PS.init = function( system, options ) {
 	
 	//PS.gridColor(r, g, b); // Random Background Theme
     PS.gridColor(r, g, b);
-    PS.color(PS.ALL, PS.ALL, 256, 256, 256);
+    PS.color(PS.ALL, PS.ALL, 255, 255, 255);
 	PS.statusColor( PS.COLOR_BLACK );
 	PS.statusText( "Puzzle" );
 
@@ -63,9 +63,11 @@ PS.release = function( x, y, data, options ) {
 PS.enter = function( x, y, data, options ) {
 	"use strict";
 	//var next;
-    if(mouseDown == false) {
+    if(mouseDown == false && PS.color(x,y) == (255 * 65536) + (255 * 256) + 255) {
         PS.color(x, y, 225, 225, 225);
-    } else{
+    } else if(mouseDown == false && PS.color(x,y) == (255 * 65536) + (20 * 256) + 20) {
+        PS.color(x, y, PS.COLOR_RED);
+    } else if (mouseDown == true) {
         PS.color(x, y, PS.COLOR_RED);
     }
         //PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
@@ -74,15 +76,16 @@ PS.enter = function( x, y, data, options ) {
 
 PS.exit = function( x, y, data, options ) {
     "use strict";
-    if(mouseDown == false) {
-        PS.color(x, y, PS.COLOR_WHITE); // YELLOW THEME
-    }
-    //if(mouseDown == false && PS.color() == PS.makeRGB(255, 20, 20){
-    //    PS.color(x, y, PS.COLOR_RED);
-    //}
-    else {
+    if(mouseDown == false && PS.color(x,y) == (225 * 65536) + (225 * 256) + 225) {
+        PS.color(x, y, 255, 255, 255); // YELLOW THEME
+    } else if(mouseDown == false && PS.color(x,y) == (255 * 65536) + (20 * 256) + 20){
         PS.color(x, y, PS.COLOR_RED);
+    } else if(mouseDown == true){
+        PS.color(x, y, PS.COLOR_RED);
+    } else {
+
     }
+
     // PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
 
 };
@@ -96,6 +99,7 @@ PS.exitGrid = function( options ) {
 
 PS.keyDown = function( key, shift, ctrl, options ) {
 	"use strict";
+
 
 	//	PS.debug( "DOWN: key = " + key + ", shift = " + shift + "\n" );
 
