@@ -29,7 +29,7 @@ PS.init = function( system, options ) {
 	"use strict";
 
     mouseDown = false;
-    rgbTriplet_red = (255 * 65536) + (0 * 256) + 0;
+    rgbTriplet_red = 255 * 65536;
     rgbTriplet_white = (255 * 65536) + (255 * 256) + 255;
     rgbTriplet_gray = (225 * 65536) + (225 * 256) + 225;
     win = false;
@@ -51,12 +51,22 @@ PS.init = function( system, options ) {
 	PS.statusColor( PS.COLOR_BLACK );
 	PS.border( PS.ALL, PS.ALL, 0 ); // no border
     PS.color(0,4,PS.COLOR_RED);
+    PS.data(0,4,1);
+
     PS.color(1, 0, PS.COLOR_RED);
+    PS.data(1,0,1);
+
     PS.color(2,0,PS.COLOR_RED);
+    PS.data(2,0,1);
+
     PS.color(3, 0, PS.COLOR_RED);
+    PS.data(3,0,1);
+
     PS.color(2,3,PS.COLOR_RED);
+    PS.data(2,3,1);
 
     PS.color(4, 0, PS.COLOR_RED);
+    PS.data(4,0,1);
 
     //PS.color(0,2,PS.COLOR_RED);
 
@@ -98,53 +108,35 @@ PS.init = function( system, options ) {
 
 PS.touch = function( x, y, data, options ) {
 	"use strict";
-    mouseDown = true;
+	if(x === 0 && y === 0)
+    {
+        mouseDown = true;
 
-    if(PS.color(x,y) === rgbTriplet_white) // if white, turn red
-    {
         PS.color(x, y, PS.COLOR_RED);
-    }
-    else if(PS.color(x,y) === rgbTriplet_red) // if red, turn gray <- DOES NOT WORK
-    {
-        PS.color(x, y, PS.color(x, y, 225, 225, 225));
-    }
-    else if(PS.color(x,y) === rgbTriplet_gray) // if gray, turn red
-    {
-        PS.color(x, y, PS.COLOR_RED);
-    }
+        PS.data(x, y, 1); // the 1 indicates that we've been to this bead
 
-    PS.data(x, y, 1);
+    }
 };
 
 PS.release = function( x, y, data, options ) {
 	"use strict";
 	mouseDown = false;
 
-	/*
-	if(lose = true){
-	   loseStuff();
+    var count = 0;
+	for(var xNum = 0 ; xNum < 5 ; xNum++) {
+	    for(var yNum = 0 ; yNum < 5 ; yNum++) {
+            if (PS.data(xNum, yNum) !== 1)
+            {
+                count++;
+            }
+        }
     }
-    else if(win = true)
-    {
-        winStuff();
+    if(count > 0) {
+	    loseStuff();
+    } else {
+	    winStuff();
     }
-    */
 
-    if (PS.data(PS.ALL, PS.ALL) !== 1)
-    {
-        loseStuff();
-    }
-    else if (PS.color(x,y) !== rgbTriplet_red) // not done fixing :(
-    {
-        loseStuff();
-    }
-    else if(PS.color(PS.ALL, PS.ALL) === rgbTriplet_red){
-        winStuff();
-    }
-    else if(PS.color(PS.ALL,PS.ALL) !== rgbTriplet_red )
-    {
-        loseStuff();
-    }
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
 };
 
@@ -155,22 +147,24 @@ PS.enter = function( x, y, data, options ) {
     {
         PS.color(x, y, 225, 225, 225);
     }
-    else if (mouseDown === true && PS.color(x,y) === rgbTriplet_white) // enables dragging
+    else if (mouseDown === true && PS.data(x,y) !== 1) // enables dragging
     {
         PS.color(x, y, PS.COLOR_RED);
+        PS.data(x, y, 1);
     }
-    else if (mouseDown === true && PS.color(x,y) === 0) // enables dragging
-    {
-        PS.color(x, y, PS.COLOR_RED);
+    else if (mouseDown === true && PS.data(x,y) === 1) {
+        loseStuff();
     }
-       // PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
+
+    // PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
+    // console.log("Hello there"); // for debugging
 
 };
 
 PS.exit = function( x, y, data, options ) {
     "use strict";
 
-    if(mouseDown === false && PS.color(x,y) === rgbTriplet_gray) // removes gray from previous bead
+    if(mouseDown === false && PS.data(x,y) === 0) // removes gray from previous bead
     {
         PS.color(x, y, 255, 255, 255);
     }
