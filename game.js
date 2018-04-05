@@ -9,15 +9,22 @@ var mouseDown = false;
 var version = 1;
 var maxLevel = 5;
 
+
+// Various possible states of the beads
+var END_BEAD = 2;
+var ENTERED = 1;
+var NOT_ENTERED = 0;
+
+
 function loseStuff()
 {
     PS.init();
-    PS.audioPlay("fx_uhoh");
+    PS.audioPlay("fx_hoot");
 }
 
 function winStuff()
 {
-    PS.data(PS.ALL, PS.ALL, 1);
+    PS.data(PS.ALL, PS.ALL, 1);     // sets data to 1 so mouse does not change bead colors
     PS.color(PS.ALL, PS.ALL, PS.COLOR_RED);
     PS.statusText("You solved all the puzzles!");
     PS.audioPlay("fx_tada");
@@ -28,49 +35,46 @@ PS.init = function( system, options ) {
 
     mouseDown = false;
 
-    var r, g, b, r2, g2, b2;
+	if(version < 5)     // 5x5 grid size for levels 1-4
+    {
+        PS.gridSize(5,5);
+    }
+    if(version >= 5)    // for more levels with larger grids
+    {
+        PS.gridSize(7,7);
+    }
 
-	r = PS.random(256)-1;
-	g = PS.random(256)-1;
-	b = PS.random(256)-1;
-
-    r2 = PS.random(256)-1;
-    g2 = PS.random(256)-1;
-    b2 = PS.random(256)-1;
-
-	PS.gridSize( 5, 5 );
 	PS.gridColor(255, 225, 225);
     PS.color(PS.ALL, PS.ALL, 255, 255, 255);
 	PS.statusColor( PS.COLOR_BLACK );
-	PS.border( PS.ALL, PS.ALL, 0 ); // no border
+	PS.border( PS.ALL, PS.ALL, 0 );     // no border
 
-    PS.data(PS.ALL, PS.ALL, 0); // resets each bead to zero for new levels
+    PS.data(PS.ALL, PS.ALL, 0);         // resets each bead to zero for new levels
 
     PS.color(0,4,PS.COLOR_RED);
-    PS.data(0,4,1);
+    PS.data(0,4, ENTERED);
 
     PS.color(1, 0, PS.COLOR_RED);
-    PS.data(1,0,1);
+    PS.data(1,0, ENTERED);
 
     PS.color(2,0,PS.COLOR_RED);
-    PS.data(2,0,1);
+    PS.data(2,0, ENTERED);
 
     PS.color(3, 0, PS.COLOR_RED);
-    PS.data(3,0,1);
+    PS.data(3,0, ENTERED);
 
     PS.color(2,3,PS.COLOR_RED);
-    PS.data(2,3,1);
+    PS.data(2,3, ENTERED);
 
     PS.color(4, 0, PS.COLOR_RED);
-    PS.data(4,0,1);
+    PS.data(4,0, ENTERED);
 
-    //var version = PS.random(4);
     if (version === 1)
     {
         PS.color(2, 2, PS.COLOR_BLACK);
         PS.glyph(0, 0,  "Start");
         PS.glyph(2, 2, "END");
-        //PS.data(2,3,1);
+        PS.data(2,2, END_BEAD);
         PS.glyphColor(2, 2, PS.COLOR_WHITE);
 
     }
@@ -79,7 +83,7 @@ PS.init = function( system, options ) {
         PS.color(4, 4, PS.COLOR_BLACK);
         PS.glyph(0, 0, "Start");
         PS.glyph(4, 4,  "END");
-        PS.data(4,4,"e");
+        PS.data(4,4, END_BEAD);
         PS.glyphColor(4, 4, PS.COLOR_WHITE);
     }
     if (version === 3)
@@ -88,7 +92,7 @@ PS.init = function( system, options ) {
         PS.glyph(0, 0, "Start");
         PS.glyphColor(2, 4, PS.COLOR_WHITE);
         PS.glyph(2, 4,  "END");
-        PS.data(2,4,"e");
+        PS.data(2,4, END_BEAD);
     }
     if (version === 4)
     {
@@ -96,7 +100,7 @@ PS.init = function( system, options ) {
         PS.glyph(0, 0, "Start");
         PS.glyphColor(3, 1, PS.COLOR_WHITE);
         PS.glyph(3, 1,  "END");
-        PS.data(3,1,"e");
+        PS.data(3,1, END_BEAD);
     }
 
     if(version ===1)
@@ -129,7 +133,7 @@ PS.touch = function( x, y, data, options ) {
         mouseDown = true;
 
         PS.color(x, y, PS.COLOR_RED);
-        PS.data(x, y, 1); // the 1 indicates that we've been to this bead
+        PS.data(x, y, ENTERED);       // flags bead as being traversed
     }
 };
 
@@ -142,52 +146,49 @@ PS.release = function( x, y, data, options ) {
 	{
 	    for(var yNum = 0 ; yNum < 5 ; yNum++)
 	    {
-            if (PS.data(xNum, yNum) !== 1)
+            if (PS.data(xNum, yNum) !== ENTERED)      // if not all beads are entered (set to 1), increase count
             {
                 count++;
             }
         }
     }
-    if(count > 0)
+    if(count > 0)       // lose if not all beads are entered/red
     {
 	    loseStuff();
-    } else {
+    } else {            // move on to next level
 	    if(version < 5)
         {
             version++;
         }
 	    PS.init();
     }
-
-    // cannot end game when player finishes all levels ***
 };
 
 PS.enter = function( x, y, data, options ) {
 	"use strict";
-	//var next;
-    if(mouseDown === false && PS.data(x,y) === 0) // turns bead gray when hovering over
+
+    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED)           // turns bead gray when hovering over
     {
         PS.color(x, y, 225, 225, 225);
     }
-    else if (mouseDown === true && PS.data(x,y) !== 1) // enables dragging
+    else if (mouseDown === true && PS.data(x,y) !== ENTERED)      // enables dragging
     {
         PS.color(x, y, PS.COLOR_RED);
-        PS.data(x, y, 1);
+        PS.data(x, y, ENTERED);
+        PS.audioPlay("fx_pop");
     }
-    else if (mouseDown === true && PS.data(x,y) === 1)
+    else if (mouseDown === true && PS.data(x,y) === ENTERED)      // lose if player tries to go back over a bead
     {
         loseStuff();
     }
 
-    // PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
     // console.log("Hello there"); // for debugging
-
 };
 
 PS.exit = function( x, y, data, options ) {
     "use strict";
 
-    if(mouseDown === false && PS.data(x,y) === 0) // removes gray from previous bead
+    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) // removes gray from previous bead
     {
         PS.color(x, y, 255, 255, 255);
     }
@@ -195,7 +196,7 @@ PS.exit = function( x, y, data, options ) {
 
 PS.exitGrid = function( options ) {
 	"use strict";
-	if(mouseDown === true)
+	if(mouseDown === true)      // lose if mouse leaves grid while dragging
 	{
 	    loseStuff();
     }
