@@ -7,17 +7,19 @@
 
 var mouseDown = false;
 var version = 1;
+var maxLevel = 5;
 
 function loseStuff()
 {
-    PS.statusText("You Lose, Please Refresh Page");
+    PS.init();
     PS.audioPlay("fx_uhoh");
-    PS.color(PS.ALL, PS.ALL, 150, 150, 255);
 }
 
 function winStuff()
 {
-    PS.statusText("You Win!");
+    PS.data(PS.ALL, PS.ALL, 1);
+    PS.color(PS.ALL, PS.ALL, PS.COLOR_RED);
+    PS.statusText("You solved all the puzzles!");
     PS.audioPlay("fx_tada");
 }
 
@@ -96,13 +98,28 @@ PS.init = function( system, options ) {
         PS.glyph(3, 1,  "END");
         PS.data(3,1,"e");
     }
-    if(version === 5)
+
+    if(version ===1)
+    {
+        PS.statusText( "Drag to fill the Grid! Level " + version);
+    }
+    else if(version === 2)
+    {
+        PS.statusText("Or use arrow keys! Level " + version);
+    }
+    else if(version === 3)
+    {
+        PS.statusText("You got the hang of it. Level " + version)
+    }
+    else if(version > 3 && version < maxLevel)
+    {
+        PS.statusText("Level " + version);
+    }
+
+    if(version === maxLevel)
     {
         winStuff();
     }
-
-    PS.statusText( "Drag to fill the Grid! v" + version);
-
 };
 
 PS.touch = function( x, y, data, options ) {
@@ -113,7 +130,6 @@ PS.touch = function( x, y, data, options ) {
 
         PS.color(x, y, PS.COLOR_RED);
         PS.data(x, y, 1); // the 1 indicates that we've been to this bead
-
     }
 };
 
