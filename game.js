@@ -36,6 +36,7 @@ function winStuff() {
 function markEntered(x, y) {
     //PS.color(x, y, PS.color(x, y, 255, 100, 0));  //wine
     PS.color(x, y, PS.color(x, y, 211, 54, 130));   //magenta
+    PS.glyphColor(x, y, 238, 232, 213);
     //PS.color(x, y, PS.color(x, y, 220, 50, 47));    //red
     //PS.color(x, y, PS.color(x, y, 203, 75, 22));    //orange
     //PS.color(x, y, PS.color(x, y, 38, 139, 210));   //blue
@@ -44,6 +45,7 @@ function markEntered(x, y) {
 
 function markStart(x, y) {
     PS.glyph(x, y, "S");
+    PS.glyphColor(x, y, 100, 100, 100);
     currentX = x;
     currentY = y;
 }
@@ -52,7 +54,7 @@ function markEnd(x, y) {
     PS.color(x, y, PS.color(x, y, 133, 153, 0));
     PS.glyph(x, y, "E");
     PS.data(x, y, END_BEAD);
-    PS.glyphColor(x, y, PS.COLOR_WHITE);
+    PS.glyphColor(x, y, 238, 232, 213);
 }
 
 function notEntered(x, y) {
@@ -120,7 +122,7 @@ PS.init = function( system, options ) {
     PS.gridShadow(true, PS.COLOR_GRAY);
     PS.color(PS.ALL, PS.ALL, 238, 232, 213);
 	PS.statusColor(88, 110, 117);   //dark gray
-    PS.statusColor(PS.COLOR_BLACK);
+    PS.statusColor(100, 100, 100);
 	PS.border( PS.ALL, PS.ALL, 0 );     // no border
 
     PS.data(PS.ALL, PS.ALL, 0);         // resets each bead to zero for new levels
