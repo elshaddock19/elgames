@@ -8,9 +8,9 @@
 var mouseDown = false;
 var firstKey = true;
 var level = 1;
-var maxLevel = 5;
+var maxLevel = 8;
 
-var boardWidth = 5;
+var boardWidth = 9;
 var currentX = 0;
 var currentY = 0;
 
@@ -77,7 +77,7 @@ function checkWin() {
     if(count > 0) {      // lose if not all beads are entered/red
         loseStuff();
     } else {            // move on to next level
-        if(level < 5) {
+        if(level < maxLevel) {
             level++;
         }
         PS.init();
@@ -87,7 +87,7 @@ function checkWin() {
 
 function move(x, y) {
     if(x < 0 || y < 0 || x > boardWidth - 1 || y > boardWidth - 1) {
-        //loseStuff();
+        loseStuff();
     } else {
         if(notEntered(x, y)) {
             if(isEnd(x, y)) {
@@ -103,6 +103,7 @@ function move(x, y) {
             loseStuff();
         }
     }
+
 }
 
 PS.init = function( system, options ) {
@@ -114,8 +115,13 @@ PS.init = function( system, options ) {
 	if(level < 5) {    // 5x5 grid size for levels 1-4
         PS.gridSize(5,5);
     }
-    if(level >= 5) {   // for more levels with larger grids
+    if(level >= 5 && level < 7)    // for more levels with larger grids
+    {
         PS.gridSize(7,7);
+    }
+    if(level >= 7)    // for more levels with larger grids
+    {
+        PS.gridSize(9,9);
     }
 
 	PS.gridColor(238, 232, 213);
@@ -167,6 +173,55 @@ PS.init = function( system, options ) {
         markStart(0, 0);
         markEnd(3, 1);
     }
+    if (level === 5) {
+        markEntered(0, 4);
+        markEntered(1, 0);
+        markEntered(2, 0);
+        markEntered(3, 0);
+        markEntered(2, 3);
+        markEntered(4, 0);
+        markStart(0, 0);
+        markEnd(3, 1);
+    }
+    if (level === 6) {
+        markEntered(0, 4);
+        markEntered(1, 0);
+        markEntered(2, 0);
+        markEntered(3, 0);
+        markEntered(2, 3);
+        markEntered(4, 0);
+        markEntered(5, 0);
+        markEntered(6, 0);
+        markEntered(6, 1);
+        markEntered(6, 2);
+        markEntered(6, 3);
+        markEntered(5, 5);
+        markStart(0, 0);
+        markEnd(5, 3);
+    }
+    if (level === 7) {
+        markEntered(0, 4);
+        markEntered(1, 0);
+        markEntered(2, 0);
+        markEntered(3, 0);
+        markEntered(2, 3);
+        markEntered(4, 0);
+        markEntered(4, 4);
+        markEntered(4, 5);
+        markEntered(5, 4);
+        markEntered(5, 5);
+        markEntered(5, 7);
+        markEntered(5, 0);
+        markEntered(6, 0);
+        markEntered(6, 1);
+        markEntered(6, 2);
+        markEntered(6, 3);
+        markEntered(6, 4);
+        markEntered(6, 5);
+        markStart(0, 0);
+        markEnd(5, 3);
+    }
+
     if(level ===1) {
         PS.statusText( "Drag to fill the Grid! Level " + level);
     }
@@ -176,10 +231,12 @@ PS.init = function( system, options ) {
     else if(level === 3) {
         PS.statusText("You got the hang of it. Level " + level)
     }
-    else if(level > 3 && level < maxLevel) {
+    else if(level > 3 && level < 7) {
         PS.statusText("Level " + level);
     }
-
+    else if(level < maxLevel){
+        PS.statusText("Final Level");
+    }
     if(level === maxLevel) {
         winStuff();
     }
@@ -191,6 +248,7 @@ PS.touch = function( x, y, data, options ) {
         mouseDown = true;
         markEntered(x, y);
     }
+
 };
 
 PS.release = function( x, y, data, options ) {
@@ -230,6 +288,7 @@ PS.exitGrid = function( options ) {
 	if(mouseDown === true) {    // lose if mouse leaves grid while dragging
 	    loseStuff();
     }
+
 };
 
 PS.keyDown = function( key, shift, ctrl, options ) {
