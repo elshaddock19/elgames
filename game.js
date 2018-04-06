@@ -10,7 +10,7 @@ var firstKey = true;
 var level = 1;
 var maxLevel = 8;
 
-var boardWidth = 9;
+var boardWidth = 0;
 var currentX = 0;
 var currentY = 0;
 
@@ -87,7 +87,7 @@ function checkWin() {
 
 function move(x, y) {
     if(x < 0 || y < 0 || x > boardWidth - 1 || y > boardWidth - 1) {
-        loseStuff();
+
     } else {
         if(notEntered(x, y)) {
             if(isEnd(x, y)) {
@@ -103,7 +103,6 @@ function move(x, y) {
             loseStuff();
         }
     }
-
 }
 
 PS.init = function( system, options ) {
@@ -142,6 +141,7 @@ PS.init = function( system, options ) {
         markEntered(4, 0);
         markStart(0, 0);
         markEnd(2, 2);
+        boardWidth = 5;
     }
     if (level === 2) {
         markEntered(0, 4);
@@ -152,6 +152,7 @@ PS.init = function( system, options ) {
         markEntered(4, 0);
         markStart(0, 0);
         markEnd(4, 4);
+        boardWidth = 5;
     }
     if (level === 3) {
         markEntered(0, 4);
@@ -162,6 +163,7 @@ PS.init = function( system, options ) {
         markEntered(4, 0);
         markStart(0, 0);
         markEnd(2, 4);
+        boardWidth = 5;
     }
     if (level === 4) {
         markEntered(0, 4);
@@ -172,6 +174,7 @@ PS.init = function( system, options ) {
         markEntered(4, 0);
         markStart(0, 0);
         markEnd(3, 1);
+        boardWidth = 5;
     }
     if (level === 5) {
         markEntered(0, 4);
@@ -182,6 +185,7 @@ PS.init = function( system, options ) {
         markEntered(4, 0);
         markStart(0, 0);
         markEnd(3, 1);
+        boardWidth = 7;
     }
     if (level === 6) {
         markEntered(0, 4);
@@ -198,6 +202,7 @@ PS.init = function( system, options ) {
         markEntered(5, 5);
         markStart(0, 0);
         markEnd(5, 3);
+        boardWidth = 7;
     }
     if (level === 7) {
         markEntered(0, 4);
@@ -220,6 +225,7 @@ PS.init = function( system, options ) {
         markEntered(6, 5);
         markStart(0, 0);
         markEnd(5, 3);
+        boardWidth = 9;
     }
 
     if(level ===1) {
