@@ -34,8 +34,8 @@ function winStuff() {
 }
 
 function markEntered(x, y) {
-    //PS.color(x, y, PS.color(x, y, 255, 100, 0));  //wine
-    PS.color(x, y, PS.color(x, y, 211, 54, 130));   //magenta
+    //PS.color(x, y, PS.color(x, y, 255, 100, 0));    //wine
+    PS.color(x, y, PS.color(x, y, 211, 54, 130));     //magenta
     PS.glyphColor(x, y, 238, 232, 213);
     //PS.color(x, y, PS.color(x, y, 220, 50, 47));    //red
     //PS.color(x, y, PS.color(x, y, 203, 75, 22));    //orange
@@ -95,14 +95,16 @@ function checkWin() {
 
 function move(x, y) {
     if(x < 0 || y < 0 || x > boardWidth - 1 || y > boardWidth - 1) {
-
+        // do nothing
     } else {
         if(notEntered(x, y)) {
             if(isEnd(x, y)) {
                 markEntered(x, y);
+                currentBead(x, y);
                 checkWin();
             } else {
                 markEntered(x, y);
+                currentBead(x, y);
                 currentX = x;
                 currentY = y;
                 PS.audioPlay("fx_pop");
@@ -265,9 +267,8 @@ PS.touch = function( x, y, data, options ) {
 	if(x === 0 && y === 0) {
         mouseDown = true;
         markEntered(x, y);
-        currentBead(x, y);      // make darker tile move with mouse/keys
+        currentBead(x, y);          // make darker tile move with mouse/keys
     }
-
 };
 
 PS.release = function( x, y, data, options ) {
@@ -279,31 +280,11 @@ PS.release = function( x, y, data, options ) {
 
 PS.enter = function( x, y, data, options ) {
 	"use strict";
-	if(isStart(x, y)) {
+	if(isStart(x, y)) {             // status displays "start" when mouse hovers over S bead
 	    PS.statusText("Start");
     }
-    if(isEnd(x, y)) {
+    if(isEnd(x, y)) {               // status displays "end" when mouse hovers over E bead
 	    PS.statusText("End");
-    }
-    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // turns bead gray when hovering over
-        PS.color(x, y, 218, 212, 193);
-    }
-    else if (mouseDown === true && PS.data(x,y) !== ENTERED) {      // enables dragging
-        markEntered(x, y);
-        PS.audioPlay("fx_pop");
-    }
-    else if (mouseDown === true && PS.data(x,y) === ENTERED) {     // lose if player tries to go back over a bead
-        loseStuff();
-    }
-
-    // console.log("Hello there"); // for debugging
-};
-
-PS.exit = function( x, y, data, options ) {
-    "use strict";
-
-    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // removes gray from previous bead
-        PS.color(x, y, 238, 232, 213);
     }
     if(isStart(x, y) === false && isEnd(x, y) === false) {          // resets status text
         if(level ===1) {
@@ -321,6 +302,29 @@ PS.exit = function( x, y, data, options ) {
         else if(level < maxLevel){
             PS.statusText("Final Level");
         }
+    }
+    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // turns bead gray when hovering over
+        PS.color(x, y, 218, 212, 193);
+    }
+    else if (mouseDown === true && PS.data(x,y) !== ENTERED) {      // enables dragging
+        markEntered(x, y);
+        PS.audioPlay("fx_pop");
+        currentBead(x, y);
+    }
+    else if (mouseDown === true && PS.data(x,y) === ENTERED) {     // lose if player tries to go back over a bead
+        loseStuff();
+    }
+
+    // console.log("Hello there"); // for debugging
+};
+
+PS.exit = function( x, y, data, options ) {
+    "use strict";
+    if(mouseDown === true) {
+        PS.color(x, y, PS.color(x, y, 211, 54, 130));               // resets color
+    }
+    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // removes gray from previous bead
+        PS.color(x, y, 238, 232, 213);
     }
 };
 
@@ -340,6 +344,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
             move(currentX, currentY);
             firstKey = false;
         } else {
+            PS.color(currentX, currentY, 211, 54, 130);
             move(currentX, currentY + 1);
         }
     }
@@ -348,6 +353,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
             move(currentX, currentY);
             firstKey = false;
         } else {
+            PS.color(currentX, currentY, 211, 54, 130);
             move(currentX, currentY - 1);
         }
     }
@@ -356,6 +362,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
             move(currentX, currentY);
             firstKey = false;
         } else {
+            PS.color(currentX, currentY, 211, 54, 130);
             move(currentX - 1, currentY);
         }
     }
@@ -364,6 +371,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
             move(currentX, currentY);
             firstKey = false;
         } else {
+            PS.color(currentX, currentY, 211, 54, 130);
             move(currentX + 1, currentY);
         }
     }
