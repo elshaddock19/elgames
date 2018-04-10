@@ -61,6 +61,14 @@ function notEntered(x, y) {
     return PS.data(x, y) !== ENTERED;
 }
 
+function isStart(x, y) {
+    if(x === 0 && y === 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function isEnd(x, y) {
     return PS.data(x, y) === END_BEAD;
 }
@@ -103,6 +111,10 @@ function move(x, y) {
             loseStuff();
         }
     }
+}
+
+function currentBead(x, y) {
+    PS.color(x, y, 191, 34, 110);
 }
 
 PS.init = function( system, options ) {
@@ -253,6 +265,7 @@ PS.touch = function( x, y, data, options ) {
 	if(x === 0 && y === 0) {
         mouseDown = true;
         markEntered(x, y);
+        currentBead(x, y);      // make darker tile move with mouse/keys
     }
 
 };
@@ -266,7 +279,12 @@ PS.release = function( x, y, data, options ) {
 
 PS.enter = function( x, y, data, options ) {
 	"use strict";
-
+	if(isStart(x, y)) {
+	    PS.statusText("Start");
+    }
+    if(isEnd(x, y)) {
+	    PS.statusText("End");
+    }
     if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // turns bead gray when hovering over
         PS.color(x, y, 218, 212, 193);
     }
@@ -286,6 +304,23 @@ PS.exit = function( x, y, data, options ) {
 
     if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // removes gray from previous bead
         PS.color(x, y, 238, 232, 213);
+    }
+    if(isStart(x, y) === false && isEnd(x, y) === false) {          // resets status text
+        if(level ===1) {
+            PS.statusText( "Drag to fill the Grid! Level " + level);
+        }
+        else if(level === 2) {
+            PS.statusText("Or use arrow keys! Level " + level);
+        }
+        else if(level === 3) {
+            PS.statusText("You got the hang of it. Level " + level)
+        }
+        else if(level > 3 && level < 7) {
+            PS.statusText("Level " + level);
+        }
+        else if(level < maxLevel){
+            PS.statusText("Final Level");
+        }
     }
 };
 
