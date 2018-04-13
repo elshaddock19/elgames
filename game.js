@@ -62,11 +62,7 @@ function notEntered(x, y) {
 }
 
 function isStart(x, y) {
-    if(x === 0 && y === 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return x === 0 && y === 0;
 }
 
 function isEnd(x, y) {
@@ -125,214 +121,89 @@ PS.init = function( system, options ) {
     mouseDown = false;
     firstKey = true;
 
-	if(level < 5) {    // 5x5 grid size for levels 1-4
-        PS.gridSize(5,5);
-    }
-    if(level >= 5 && level < 7)    // for more levels with larger grids
-    {
-        PS.gridSize(7,7);
-    }
-    if(level >= 7)    // for more levels with larger grids
-    {
-        PS.gridSize(9,9);
-    }
+    PS.gridSize(15, 15);
 
-	PS.gridColor(238, 232, 213);
+	PS.gridColor(10, 10, 10);
     PS.gridShadow(true, PS.COLOR_GRAY);
-    PS.color(PS.ALL, PS.ALL, 238, 232, 213);
-	PS.statusColor(88, 110, 117);   //dark gray
-    PS.statusColor(100, 100, 100);
-	PS.border( PS.ALL, PS.ALL, 0 );     // no border
+    PS.color(PS.ALL, PS.ALL, 175, 175, 175);
+	//PS.statusColor(88, 110, 117);                   //dark gray
+    PS.statusColor(180, 180, 180);                   //light gray
+    //PS.statusColor(100, 100, 100);
+    PS.statusText("Onward");
+	PS.border( PS.ALL, PS.ALL, 0 );                 // no border
+    PS.bgAlpha( PS.ALL, PS.ALL, PS.ALPHA_OPAQUE );  // opaque bg
+    PS.bgColor( PS.ALL, PS.ALL, 175, 175, 175 );    // same color as board
 
     PS.data(PS.ALL, PS.ALL, 0);         // resets each bead to zero for new levels
 
-    if (level === 1) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markStart(0, 0);
-        markEnd(2, 2);
-        boardWidth = 5;
-    }
-    if (level === 2) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markStart(0, 0);
-        markEnd(4, 4);
-        boardWidth = 5;
-    }
-    if (level === 3) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markStart(0, 0);
-        markEnd(2, 4);
-        boardWidth = 5;
-    }
-    if (level === 4) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markStart(0, 0);
-        markEnd(3, 1);
-        boardWidth = 5;
-    }
-    if (level === 5) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markStart(0, 0);
-        markEnd(3, 1);
-        boardWidth = 7;
-    }
-    if (level === 6) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markEntered(5, 0);
-        markEntered(6, 0);
-        markEntered(6, 1);
-        markEntered(6, 2);
-        markEntered(6, 3);
-        markEntered(5, 5);
-        markStart(0, 0);
-        markEnd(5, 3);
-        boardWidth = 7;
-    }
-    if (level === 7) {
-        markEntered(0, 4);
-        markEntered(1, 0);
-        markEntered(2, 0);
-        markEntered(3, 0);
-        markEntered(2, 3);
-        markEntered(4, 0);
-        markEntered(4, 4);
-        markEntered(4, 5);
-        markEntered(5, 4);
-        markEntered(5, 5);
-        markEntered(5, 7);
-        markEntered(5, 0);
-        markEntered(6, 0);
-        markEntered(6, 1);
-        markEntered(6, 2);
-        markEntered(6, 3);
-        markEntered(6, 4);
-        markEntered(6, 5);
-        markStart(0, 0);
-        markEnd(5, 3);
-        boardWidth = 9;
-    }
+    /*
+    // screen mockup vertical version
+    PS.color(2, 1, 30, 30, 30);         // dark bead
+    PS.color(2, 2, 30, 30, 30);
+    PS.color(5, 3, 30, 30, 30);
+    PS.color(9, 4, 30, 30, 30);
+    PS.color(14, 2, 30, 30, 30);
+    PS.color(13, 2, 30, 30, 30);
+    PS.color(12, 2, 30, 30, 30);
 
-    if(level ===1) {
-        PS.statusText( "Drag to fill the Grid! Level " + level);
-    }
-    else if(level === 2) {
-        PS.statusText("Or use arrow keys! Level " + level);
-    }
-    else if(level === 3) {
-        PS.statusText("You got the hang of it. Level " + level)
-    }
-    else if(level > 3 && level < 7) {
-        PS.statusText("Level " + level);
-    }
-    else if(level < maxLevel){
-        PS.statusText("Final Level");
-    }
-    if(level === maxLevel) {
-        winStuff();
-    }
+    //PS.scale(7, 13, 75);              // player bead
+    PS.radius(7, 13, 50);
+    PS.color(7, 13, 85, 85, 85);
+
+    PS.scale(3, 7, 50);                 // health bead 1
+    PS.radius(3, 7, 50);
+    PS.color(3, 7, 200, 200, 200);
+
+    PS.scale(13, 4, 75);                // health bead 1
+    PS.radius(13, 4, 50);
+    PS.color(13, 4, 200, 200, 200);
+    */
+
+    // screen mockup horizontal direction
+    PS.color(14, 1, 30, 30, 30);         // dark bead
+    PS.color(14, 2, 30, 30, 30);
+    PS.color(12, 4, 30, 30, 30);
+    PS.color(9, 9, 30, 30, 30);
+    PS.color(14, 13, 30, 30, 30);
+    PS.color(13, 13, 30, 30, 30);
+    PS.color(12, 13, 30, 30, 30);
+
+    //PS.scale(7, 13, 75);              // player bead
+    PS.radius(1, 8, 50);
+    PS.color(1, 8, 85, 85, 85);
+
+    PS.scale(3, 10, 50);                 // health bead small
+    PS.radius(3, 10, 50);
+    PS.color(3, 10, 200, 200, 200);
+
+    PS.scale(13, 4, 75);                // health bead medium
+    PS.radius(13, 4, 50);
+    PS.color(13, 4, 200, 200, 200);
 };
 
 PS.touch = function( x, y, data, options ) {
 	"use strict";
-	if(x === 0 && y === 0) {
-        mouseDown = true;
-        markEntered(x, y);
-        currentBead(x, y);          // make darker tile move with mouse/keys
-    }
+
 };
 
 PS.release = function( x, y, data, options ) {
 	"use strict";
-	mouseDown = false;
 
-    checkWin();
 };
 
 PS.enter = function( x, y, data, options ) {
 	"use strict";
-	if(isStart(x, y)) {             // status displays "start" when mouse hovers over S bead
-	    PS.statusText("Start");
-    }
-    if(isEnd(x, y)) {               // status displays "end" when mouse hovers over E bead
-	    PS.statusText("End");
-    }
-    if(isStart(x, y) === false && isEnd(x, y) === false) {          // resets status text
-        if(level ===1) {
-            PS.statusText( "Drag to fill the Grid! Level " + level);
-        }
-        else if(level === 2) {
-            PS.statusText("Or use arrow keys! Level " + level);
-        }
-        else if(level === 3) {
-            PS.statusText("You got the hang of it. Level " + level)
-        }
-        else if(level > 3 && level < 7) {
-            PS.statusText("Level " + level);
-        }
-        else if(level < maxLevel){
-            PS.statusText("Final Level");
-        }
-    }
-    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // turns bead gray when hovering over
-        PS.color(x, y, 218, 212, 193);
-    }
-    else if (mouseDown === true && PS.data(x,y) !== ENTERED) {      // enables dragging
-        markEntered(x, y);
-        PS.audioPlay("fx_pop");
-        currentBead(x, y);
-    }
-    else if (mouseDown === true && PS.data(x,y) === ENTERED) {     // lose if player tries to go back over a bead
-        loseStuff();
-    }
-
     // console.log("Hello there"); // for debugging
+
 };
 
 PS.exit = function( x, y, data, options ) {
     "use strict";
-    if(mouseDown === true) {
-        PS.color(x, y, PS.color(x, y, 211, 54, 130));               // resets color
-    }
-    if(mouseDown === false && PS.data(x,y) === NOT_ENTERED) {       // removes gray from previous bead
-        PS.color(x, y, 238, 232, 213);
-    }
+
 };
 
 PS.exitGrid = function( options ) {
 	"use strict";
-	if(mouseDown === true) {    // lose if mouse leaves grid while dragging
-	    loseStuff();
-    }
 
 };
 
