@@ -5,20 +5,23 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
-var mouseDown = false;
-var firstKey = true;
-var level = 1;
-var maxLevel = 8;
 
-var boardWidth = 0;
+var db = null;
+
+// Call this function to finalize initialization
+// and start your game
+
+var finalize = function () {
+    // Finalizing code goes here
+
+};
+
+var level = 1;
+var maxLevel = 3;
+
+var boardWidth = 15;
 var currentX = 0;
 var currentY = 0;
-
-// possible bead states
-var END_BEAD = 2;
-var ENTERED = 1;
-var NOT_ENTERED = 0;
-
 
 function loseStuff() {
     PS.init();
@@ -33,55 +36,28 @@ function winStuff() {
     PS.audioPlay("fx_tada");
 }
 
-function markEntered(x, y) {
-    //PS.color(x, y, PS.color(x, y, 255, 100, 0));    //wine
-    PS.color(x, y, PS.color(x, y, 211, 54, 130));     //magenta
-    PS.glyphColor(x, y, 238, 232, 213);
-    //PS.color(x, y, PS.color(x, y, 220, 50, 47));    //red
-    //PS.color(x, y, PS.color(x, y, 203, 75, 22));    //orange
-    //PS.color(x, y, PS.color(x, y, 38, 139, 210));   //blue
-    PS.data(x, y, ENTERED);
+function playerBead(x, y) {
+    PS.color(x, y, 50, 50, 50);
 }
 
-function markStart(x, y) {
-    PS.glyph(x, y, "S");
-    PS.glyphColor(x, y, 100, 100, 100);
-    currentX = x;
-    currentY = y;
-}
-
-function markEnd(x, y) {
-    PS.color(x, y, PS.color(x, y, 133, 153, 0));
-    PS.glyph(x, y, "E");
-    PS.data(x, y, END_BEAD);
-    PS.glyphColor(x, y, 238, 232, 213);
-}
-
-function notEntered(x, y) {
-    return PS.data(x, y) !== ENTERED;
-}
-
-function isStart(x, y) {
-    return x === 0 && y === 0;
-}
-
-function isEnd(x, y) {
-    return PS.data(x, y) === END_BEAD;
+function enemyBead(x, y) {
+    PS.color(x, y, 250, 250, 250);
+    PS.data(x, y, "enemy");
 }
 
 function checkWin() {
     var count = 0;
-    for(var xNum = 0 ; xNum < 5 ; xNum++) {
-        for(var yNum = 0 ; yNum < 5 ; yNum++) {
+    for (var xNum = 0; xNum < 5; xNum++) {
+        for (var yNum = 0; yNum < 5; yNum++) {
             if (PS.data(xNum, yNum) !== ENTERED) {     // if not all beads are entered (set to 1), increase count
                 count++;
             }
         }
     }
-    if(count > 0) {      // lose if not all beads are entered/red
+    if (count > 0) {      // lose if not all beads are entered/red
         loseStuff();
     } else {            // move on to next level
-        if(level < maxLevel) {
+        if (level < maxLevel) {
             level++;
         }
         PS.init();
@@ -90,160 +66,106 @@ function checkWin() {
 }
 
 function move(x, y) {
-    if(x < 0 || y < 0 || x > boardWidth - 1 || y > boardWidth - 1) {
-        // do nothing
+    if (x < 0) {
+        playerBead(x + 1, y);
+    } else if (y < 0) {
+        playerBead(x, y + 1);
+    } else if (x > boardWidth - 1) {
+        playerBead(x - 1, y);
+    } else if (y > boardWidth - 1) {
+        playerBead(x, y - 1);
     } else {
-        if(notEntered(x, y)) {
-            if(isEnd(x, y)) {
-                markEntered(x, y);
-                currentBead(x, y);
-                checkWin();
-            } else {
-                markEntered(x, y);
-                currentBead(x, y);
-                currentX = x;
-                currentY = y;
-                PS.audioPlay("fx_pop");
-            }
-        } else {
+        if (PS.data(x, y) === "enemy"){
             loseStuff();
+            //console.log(5);
         }
+        playerBead(x, y);
+        currentX = x;
+        currentY = y;
+        PS.audioPlay("fx_pop");
     }
 }
 
-function currentBead(x, y) {
-    PS.color(x, y, 191, 34, 110);
-}
-
-PS.init = function( system, options ) {
-	"use strict";
-
-    mouseDown = false;
-    firstKey = true;
+PS.init = function (system, options) {
+    // resets all beads
+    PS.data(PS.ALL, PS.ALL);
+    currentX = 0;
+    currentY = 0;
+    level = 1;
 
     PS.gridSize(15, 15);
+    PS.gridColor(10, 10, 10);                       // dark background
+    PS.gridShadow(true, PS.COLOR_GRAY);             // glowing effect
+    PS.color(PS.ALL, PS.ALL, 175, 175, 175);        // light board
+    PS.statusColor(180, 180, 180);                  // light gray text over dark bg
+    PS.statusText("Onward");                        // title
+    PS.border(PS.ALL, PS.ALL, 0);                   // no border
+    PS.bgAlpha(PS.ALL, PS.ALL, PS.ALPHA_OPAQUE);    // opaque bg
+    PS.bgColor(PS.ALL, PS.ALL, 175, 175, 175);      // same color as board
 
-	PS.gridColor(10, 10, 10);
-    PS.gridShadow(true, PS.COLOR_GRAY);
-    PS.color(PS.ALL, PS.ALL, 175, 175, 175);
-	//PS.statusColor(88, 110, 117);                   //dark gray
-    PS.statusColor(180, 180, 180);                   //light gray
-    //PS.statusColor(100, 100, 100);
-    PS.statusText("Onward");
-	PS.border( PS.ALL, PS.ALL, 0 );                 // no border
-    PS.bgAlpha( PS.ALL, PS.ALL, PS.ALPHA_OPAQUE );  // opaque bg
-    PS.bgColor( PS.ALL, PS.ALL, 175, 175, 175 );    // same color as board
+    enemyBead(5, 5);
+    enemyBead(10, 12);
 
-    PS.data(PS.ALL, PS.ALL, 0);         // resets each bead to zero for new levels
-
-    /*
-    // screen mockup vertical version
-    PS.color(2, 1, 30, 30, 30);         // dark bead
-    PS.color(2, 2, 30, 30, 30);
-    PS.color(5, 3, 30, 30, 30);
-    PS.color(9, 4, 30, 30, 30);
-    PS.color(14, 2, 30, 30, 30);
-    PS.color(13, 2, 30, 30, 30);
-    PS.color(12, 2, 30, 30, 30);
-
-    //PS.scale(7, 13, 75);              // player bead
-    PS.radius(7, 13, 50);
-    PS.color(7, 13, 85, 85, 85);
-
-    PS.scale(3, 7, 50);                 // health bead 1
-    PS.radius(3, 7, 50);
-    PS.color(3, 7, 200, 200, 200);
-
-    PS.scale(13, 4, 75);                // health bead 1
-    PS.radius(13, 4, 50);
-    PS.color(13, 4, 200, 200, 200);
-    */
-
-    // screen mockup horizontal direction
-    PS.color(14, 1, 30, 30, 30);         // dark bead
-    PS.color(14, 2, 30, 30, 30);
-    PS.color(12, 4, 30, 30, 30);
-    PS.color(9, 9, 30, 30, 30);
-    PS.color(14, 13, 30, 30, 30);
-    PS.color(13, 13, 30, 30, 30);
-    PS.color(12, 13, 30, 30, 30);
-
-    //PS.scale(7, 13, 75);              // player bead
-    PS.radius(1, 8, 50);
-    PS.color(1, 8, 85, 85, 85);
-
-    PS.scale(3, 10, 50);                 // health bead small
-    PS.radius(3, 10, 50);
-    PS.color(3, 10, 200, 200, 200);
-
-    PS.scale(13, 4, 75);                // health bead medium
-    PS.radius(13, 4, 50);
-    PS.color(13, 4, 200, 200, 200);
+    if (db) {
+        db = PS.dbInit(db, {login: finalize});
+        if (db === PS.ERROR) {
+            db = null;
+        }
+    }
+    else {
+        finalize();
+    }
 };
 
-PS.touch = function( x, y, data, options ) {
-	"use strict";
 
-};
+// At major game events (end of a level,
+// major victory, etc), add this bit of code
+// to record the event in the database.
 
-PS.release = function( x, y, data, options ) {
-	"use strict";
+if (db && PS.dbValid(db)) {
+    PS.dbEvent(db, "score", val); // val can be anything
+}
 
-};
+// At the end of your game (or the
+// end of the last available level),
+// install this code to send the data.
 
-PS.enter = function( x, y, data, options ) {
-	"use strict";
-    // console.log("Hello there"); // for debugging
+if (db && PS.dbValid(db)) {
+    PS.dbEvent(db, "gameover", true);
+    PS.dbSend(db, "bmoriarty", {discard: true});
+    db = null;
+}
 
-};
-
-PS.exit = function( x, y, data, options ) {
+PS.keyDown = function (key, shift, ctrl, options) {
     "use strict";
 
+    if (key === PS.KEY_ARROW_DOWN) {
+        PS.color(currentX, currentY, 175, 175, 175);
+        move(currentX, currentY + 1);
+    }
+    else if (key === PS.KEY_ARROW_UP) {
+        PS.color(currentX, currentY, 175, 175, 175);
+        move(currentX, currentY - 1);
+    }
+    else if (key === PS.KEY_ARROW_LEFT) {
+        PS.color(currentX, currentY, 175, 175, 175);
+        move(currentX - 1, currentY);
+    }
+    else if (key === PS.KEY_ARROW_RIGHT) {
+        PS.color(currentX, currentY, 175, 175, 175);
+        move(currentX + 1, currentY);
+    }
 };
 
-PS.exitGrid = function( options ) {
-	"use strict";
+// Add the code below to the
+// PS.shutdown() event handler at the
+// bottom of game.js to save your
+// data in case the player closes
+// the browser before finishing.
 
-};
-
-PS.keyDown = function( key, shift, ctrl, options ) {
-	"use strict";
-
-	if(key === PS.KEY_ARROW_DOWN) {
-        if(firstKey) {
-            move(currentX, currentY);
-            firstKey = false;
-        } else {
-            PS.color(currentX, currentY, 211, 54, 130);
-            move(currentX, currentY + 1);
-        }
-    }
-    else if(key === PS.KEY_ARROW_UP) {
-        if(firstKey) {
-            move(currentX, currentY);
-            firstKey = false;
-        } else {
-            PS.color(currentX, currentY, 211, 54, 130);
-            move(currentX, currentY - 1);
-        }
-    }
-    else if(key === PS.KEY_ARROW_LEFT) {
-        if(firstKey) {
-            move(currentX, currentY);
-            firstKey = false;
-        } else {
-            PS.color(currentX, currentY, 211, 54, 130);
-            move(currentX - 1, currentY);
-        }
-    }
-    else if(key === PS.KEY_ARROW_RIGHT) {
-        if(firstKey) {
-            move(currentX, currentY);
-            firstKey = false;
-        } else {
-            PS.color(currentX, currentY, 211, 54, 130);
-            move(currentX + 1, currentY);
-        }
+PS.shutdown = function (options) {
+    if (db && PS.dbValid(db)) {
+        PS.dbEvent(db, "shutdown", true);
+        PS.dbSend(db, "bmoriarty", {discard: true});
     }
 };
