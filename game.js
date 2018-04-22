@@ -8,61 +8,28 @@
 
 var db = null;
 
-// Call this function to finalize initialization
-// and start your game
-
-var finalize = function () {
-    // Finalizing code goes here
-
-};
-
 var level = 1;
 var maxLevel = 3;
-
 var boardWidth = 15;
 var currentX = 0;
 var currentY = 0;
+var enemyX = 0;
+var enemyY = 0;
 
-function loseStuff() {
-    PS.init();
-    PS.audioPlay("fx_hoot");
-}
+var timerID;
 
-function winStuff() {
-    PS.data(PS.ALL, PS.ALL, 1);     // sets data to 1 so mouse does not change bead colors
-    //PS.color(PS.ALL, PS.ALL, 150, 200, 0));
-    PS.color(PS.ALL, PS.ALL, 133, 153, 0);
-    PS.statusText("You solved all the puzzles!");
-    PS.audioPlay("fx_tada");
-}
+var finalize = function () {
+    timerID = PS.timerStart(60, myTimer);
+};
+
+function myTimer() {
+    //enemyMove(enemyX, enemyY);      // change to enemy shoot?
+};
+
 
 function playerBead(x, y) {
     PS.color(x, y, 50, 50, 50);
-}
-
-function enemyBead(x, y) {
-    PS.color(x, y, 250, 250, 250);
-    PS.data(x, y, "enemy");
-}
-
-function checkWin() {
-    var count = 0;
-    for (var xNum = 0; xNum < 5; xNum++) {
-        for (var yNum = 0; yNum < 5; yNum++) {
-            if (PS.data(xNum, yNum) !== ENTERED) {     // if not all beads are entered (set to 1), increase count
-                count++;
-            }
-        }
-    }
-    if (count > 0) {      // lose if not all beads are entered/red
-        loseStuff();
-    } else {            // move on to next level
-        if (level < maxLevel) {
-            level++;
-        }
-        PS.init();
-        PS.audioPlay("fx_ding");
-    }
+    PS.data(x, y, "player");
 }
 
 function move(x, y) {
@@ -75,23 +42,77 @@ function move(x, y) {
     } else if (y > boardWidth - 1) {
         playerBead(x, y - 1);
     } else {
-        if (PS.data(x, y) === "enemy"){
-            loseStuff();
+        if (PS.data(x, y) === "enemy") {
+            lose();
             //console.log(5);
+        } else {
+            playerBead(x, y);
+            currentX = x;
+            currentY = y;
+            PS.audioPlay("fx_pop");
         }
-        playerBead(x, y);
-        currentX = x;
-        currentY = y;
-        PS.audioPlay("fx_pop");
     }
 }
 
+function massDown() {
+
+}
+
+function massUp() {
+
+}
+
+function enemy(x, y) {
+    PS.color(x, y, 250, 250, 250);
+    PS.data(x, y, "enemy");
+}
+
+function enemyMove(x, y) {
+    reset(x, y);
+    enemy(x + PS.random(8), y + PS.random(8));
+}
+
+
+/*
+function checkWin() {
+    var count = 0;
+    for (var xNum = 0; xNum < 5; xNum++) {
+        for (var yNum = 0; yNum < 5; yNum++) {
+            if (PS.data(xNum, yNum) !== ENTERED) {     // if not all beads are entered (set to 1), increase count
+                count++;
+            }
+        }
+    }
+    if (count > 0) {      // lose if not all beads are entered/red
+        lose();
+    } else {            // move on to next level
+        if (level < maxLevel) {
+            level++;
+        }
+        PS.init();
+        PS.audioPlay("fx_ding");
+    }
+}
+*/
+
+function lose() {
+    PS.init();
+    PS.audioPlay("fx_hoot");
+}
+
+function winStuff() {
+    PS.color(PS.ALL, PS.ALL, 133, 153, 0);
+    PS.audioPlay("fx_tada");
+    PS.color(10, 10, 10);       // grid color same as bg color
+}
+
+function reset(x, y) {
+    PS.data(x, y);
+    PS.color(x, y, 175, 175, 175);
+    console.log("reset");
+}
+
 PS.init = function (system, options) {
-    // resets all beads
-    PS.data(PS.ALL, PS.ALL);
-    currentX = 0;
-    currentY = 0;
-    level = 1;
 
     PS.gridSize(15, 15);
     PS.gridColor(10, 10, 10);                       // dark background
@@ -103,8 +124,21 @@ PS.init = function (system, options) {
     PS.bgAlpha(PS.ALL, PS.ALL, PS.ALPHA_OPAQUE);    // opaque bg
     PS.bgColor(PS.ALL, PS.ALL, 175, 175, 175);      // same color as board
 
-    enemyBead(5, 5);
-    enemyBead(10, 12);
+    // resets all beads
+    PS.data(PS.ALL, PS.ALL);
+    currentX = 7;
+    currentY = 7;
+    level = 1;
+    playerBead(currentX, currentY);                 // moves player back to center
+
+    enemy(5, 3);
+    enemy(5, 2);
+    enemy(10, 10);
+    enemy(11, 10);
+    enemy(12, 10);
+    enemy(13, 10);
+    enemy(14, 10);
+
 
     if (db) {
         db = PS.dbInit(db, {login: finalize});
