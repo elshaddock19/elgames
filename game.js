@@ -6,26 +6,35 @@
 /*global PS */
 
 
-var db = null;
+var db = "onward";
 
 var level = 1;
 var maxLevel = 3;
 var boardWidth = 15;
 var currentX = 0;
 var currentY = 0;
-var enemyX = 0;
-var enemyY = 0;
+var createdTimer = false;
+
+var enemyXs = [];
+var enemyYs = [];
 
 var timerID;
 
 var finalize = function () {
-    timerID = PS.timerStart(60, myTimer);
+    if(!createdTimer) {
+        timerID = PS.timerStart(60, myTimer);
+        createdTimer = true;
+    }
 };
 
 function myTimer() {
-    //enemyMove(enemyX, enemyY);      // change to enemy shoot?
+    var counter = 0;
+    for(counter = 0; counter < enemyXs.length; counter++) {
+        var enemyX = enemyXs[counter];
+        var enemyY = enemyYs[counter];
+        moveEnemy(enemyX, enemyY);
+    }
 };
-
 
 function playerBead(x, y) {
     PS.color(x, y, 50, 50, 50);
@@ -62,23 +71,40 @@ function massUp() {
 
 }
 
-function enemy(x, y) {
+function updateEnemyPosition(x, y, newX, newY) {
+    PS.color(newX, newY, 250, 250, 250);
+    PS.data(newX, newY, "enemy");
+
+    var counter = 0;
+    for(counter = 0; counter < enemyXs.length; counter++) {
+        var enemyX = enemyXs[counter];
+        var enemyY = enemyYs[counter];
+        if(enemyX === x && enemyY === y) {
+            enemyXs[counter] = newX;
+            enemyYs[counter] = newY;
+        }
+    }
+}
+
+function newEnemy(x, y) {
     PS.color(x, y, 250, 250, 250);
     PS.data(x, y, "enemy");
+    enemyXs.push(x);
+    enemyYs.push(y);
 }
 
-function enemyMove(x, y) {
+function moveEnemy(x, y) {
     reset(x, y);
-    enemy(x + PS.random(8), y + PS.random(8));
+    updateEnemyPosition(x, y, x, y + 1);
 }
-
 
 /*
 function checkWin() {
     var count = 0;
     for (var xNum = 0; xNum < 5; xNum++) {
         for (var yNum = 0; yNum < 5; yNum++) {
-            if (PS.data(xNum, yNum) !== ENTERED) {     // if not all beads are entered (set to 1), increase count
+            if (PS.data(xNum, yNum) !== ENTERED) {     // if not all 
+beads are entered (set to 1), increase count
                 count++;
             }
         }
@@ -96,6 +122,13 @@ function checkWin() {
 */
 
 function lose() {
+
+    if (db && PS.dbValid(db)) {
+        PS.dbEvent(db, "gameover", true);
+        PS.dbSend(db, "bmoriarty", {discard: true});
+        db = null;
+    }
+
     PS.init();
     PS.audioPlay("fx_hoot");
 }
@@ -114,6 +147,7 @@ function reset(x, y) {
 
 PS.init = function (system, options) {
 
+
     PS.gridSize(15, 15);
     PS.gridColor(10, 10, 10);                       // dark background
     PS.gridShadow(true, PS.COLOR_GRAY);             // glowing effect
@@ -131,22 +165,23 @@ PS.init = function (system, options) {
     level = 1;
     playerBead(currentX, currentY);                 // moves player back to center
 
-    enemy(5, 3);
-    enemy(5, 2);
-    enemy(10, 10);
-    enemy(11, 10);
-    enemy(12, 10);
-    enemy(13, 10);
-    enemy(14, 10);
+    enemyXs = [];
+    enemyYs = [];
 
+    newEnemy(5, 3);
+    newEnemy(5, 2);
+    newEnemy(10, 10);
+    newEnemy(11, 10);
+    newEnemy(12, 10);
+    newEnemy(13, 10);
+    newEnemy(14, 10);
 
     if (db) {
         db = PS.dbInit(db, {login: finalize});
         if (db === PS.ERROR) {
             db = null;
         }
-    }
-    else {
+    } else {
         finalize();
     }
 };
@@ -156,19 +191,11 @@ PS.init = function (system, options) {
 // major victory, etc), add this bit of code
 // to record the event in the database.
 
-if (db && PS.dbValid(db)) {
-    PS.dbEvent(db, "score", val); // val can be anything
-}
 
 // At the end of your game (or the
 // end of the last available level),
 // install this code to send the data.
 
-if (db && PS.dbValid(db)) {
-    PS.dbEvent(db, "gameover", true);
-    PS.dbSend(db, "bmoriarty", {discard: true});
-    db = null;
-}
 
 PS.keyDown = function (key, shift, ctrl, options) {
     "use strict";
