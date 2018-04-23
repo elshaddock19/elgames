@@ -5,8 +5,7 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
-
-var db = "onward";
+var db = null;
 
 var level = 1;
 var maxLevel = 3;
@@ -28,8 +27,8 @@ var finalize = function () {
 };
 
 function myTimer() {
-    var counter = 0;
-    for(counter = 0; counter < enemyXs.length; counter++) {
+    console.log("tick");
+    for(var counter = 0; counter < enemyXs.length; counter++) {
         var enemyX = enemyXs[counter];
         var enemyY = enemyYs[counter];
         moveEnemy(enemyX, enemyY);
@@ -94,8 +93,41 @@ function newEnemy(x, y) {
 }
 
 function moveEnemy(x, y) {
-    reset(x, y);
-    updateEnemyPosition(x, y, x, y + 1);
+    xInc = getRandomMove(-1, 1);
+    yInc = getRandomMove(-1, 1);
+    if (isMoveValid(x + xInc, y + yInc)) {
+        reset(x, y);
+        updateEnemyPosition(x, y, x + xInc, y + yInc);
+    } else {
+        moveEnemy(x, y);
+    }
+}
+
+function getRandomMove(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function isMoveValid( newX, newY) {
+    if(newX > 0 && newX < boardWidth - 1 &&
+            newY > 0 && newY < boardWidth - 1) {
+        if(newX != currentX && newY != currentY) {
+            if(!isEnemyHere(newX, newY)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function isEnemyHere(x, y) {
+    for(var counter = 0; counter < enemyXs.length; counter++) {
+        var enemyX = enemyXs[counter];
+        var enemyY = enemyYs[counter];
+        if(enemyX === x && enemyY === y) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /*
@@ -122,7 +154,6 @@ beads are entered (set to 1), increase count
 */
 
 function lose() {
-
     if (db && PS.dbValid(db)) {
         PS.dbEvent(db, "gameover", true);
         PS.dbSend(db, "bmoriarty", {discard: true});
@@ -142,12 +173,9 @@ function winStuff() {
 function reset(x, y) {
     PS.data(x, y);
     PS.color(x, y, 175, 175, 175);
-    console.log("reset");
 }
 
 PS.init = function (system, options) {
-
-
     PS.gridSize(15, 15);
     PS.gridColor(10, 10, 10);                       // dark background
     PS.gridShadow(true, PS.COLOR_GRAY);             // glowing effect
@@ -158,16 +186,17 @@ PS.init = function (system, options) {
     PS.bgAlpha(PS.ALL, PS.ALL, PS.ALPHA_OPAQUE);    // opaque bg
     PS.bgColor(PS.ALL, PS.ALL, 175, 175, 175);      // same color as board
 
-    // resets all beads
+    // resets data from previous game
     PS.data(PS.ALL, PS.ALL);
     currentX = 7;
     currentY = 7;
     level = 1;
-    playerBead(currentX, currentY);                 // moves player back to center
+    playerBead(currentX, currentY);
 
     enemyXs = [];
     enemyYs = [];
 
+    // creates enemies
     newEnemy(5, 3);
     newEnemy(5, 2);
     newEnemy(10, 10);
@@ -199,7 +228,6 @@ PS.init = function (system, options) {
 
 PS.keyDown = function (key, shift, ctrl, options) {
     "use strict";
-
     if (key === PS.KEY_ARROW_DOWN) {
         PS.color(currentX, currentY, 175, 175, 175);
         move(currentX, currentY + 1);
