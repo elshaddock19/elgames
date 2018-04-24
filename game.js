@@ -5,7 +5,7 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
-var db = "Onward";
+var db = null;
 
 var level = 1;
 var maxLevel = 3;
@@ -16,6 +16,8 @@ var createdTimer = false;
 
 var enemyXs = [];
 var enemyYs = [];
+var bulletXs = [];
+var bulletYs = [];
 
 var timerID;
 
@@ -32,8 +34,11 @@ function myTimer() {
         var enemyX = enemyXs[counter];
         var enemyY = enemyYs[counter];
         moveEnemy(enemyX, enemyY);
-        moveBullet(enemyX, enemyY);
+        var bulletX = bulletXs[counter];
+        var bulletY = bulletYs[counter];
+        moveBullet(bulletX, bulletY);
     }
+
 };
 
 function playerBead(x, y) {
@@ -86,6 +91,21 @@ function updateEnemyPosition(x, y, newX, newY) {
     }
 }
 
+function updateBulletPosition(x, y, newX, newY) {
+    PS.color(newX, newY, 250, 250, 250);
+    PS.data(newX, newY, "bullet");
+
+    var counter = 0;
+    for(counter = 0; counter < bulletXs.length; counter++) {
+        var bulletX = bulletXs[counter];
+        var bulletY = bulletYs[counter];
+        if(bulletX === x && bulletY === y) {
+            bulletXs[counter] = newX;
+            bulletYs[counter] = newY;
+        }
+    }
+}
+
 function newEnemy(x, y) {
     PS.color(x, y, 250, 250, 250);
     PS.data(x, y, "enemy");
@@ -97,21 +117,33 @@ function bullet(x, y){
     PS.color(x, y, 0, 0, 0);
     PS.scale(x, y, 20);
     PS.data(x, y, "bullet");
-    enemyXs.push(x);
-    enemyYs.push(y);
+    bulletXs.push(x);
+    bulletYs.push(y);
 }
 
 function moveBullet(x, y){
-    xInc = getRandomMove(-2, 2);
-    yInc = getRandomMove(-2, 2);
-
-    if(isMoveValid(x + xInc, y +yInc)){
+    bulletDirection(x, y);
+    if(isMoveValid(x + xInc, y + yInc)){
         reset(x, y);
-        updateEnemyPosition(x, y, x + xInc, y +yInc);
+        updateBulletPosition(x, y, x + xInc, y +yInc);
     } else {
-        moveBullet(x, y);
+        //moveBullet(x, y);
     }
+}
 
+function bulletDirection(x, y) {
+    if(currentX < x) {
+        xInc = -1;
+    }
+    if(currentX > x) {
+        xInc = 1;
+    }
+    if(currentY < y) {
+        yInc = -1;
+    }
+    if(currentY > y) {
+        yInc = 1;
+    }
 }
 
 function moveEnemy(x, y) {
@@ -226,7 +258,12 @@ PS.init = function (system, options) {
     newEnemy(12, 10);
     newEnemy(13, 10);
     newEnemy(14, 10);
+    newEnemy(7, 10);
+    newEnemy(8, 11);
+    newEnemy(8, 3);
+    newEnemy(6, 4);
 
+    /*
     bullet(5, 3);
     bullet(5, 2);
     bullet(10, 10);
@@ -234,6 +271,7 @@ PS.init = function (system, options) {
     bullet(12, 10);
     bullet(13, 10);
     bullet(14, 10);
+    */
 
     if (db) {
         db = PS.dbInit(db, {login: finalize});
