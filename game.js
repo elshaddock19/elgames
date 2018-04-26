@@ -7,7 +7,7 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
-var db = "Onward";
+var db = null;
 
 var level = 1;
 var maxLevel = 3;
@@ -39,9 +39,12 @@ var finalize = function () {
     }
 
     // resets data from previous level
-    PS.data(PS.ALL, PS.ALL);
-    currentX = 7;
-    currentY = 7;
+    reset(PS.ALL, PS.ALL);
+    if (level === 1) {
+        playerBead(currentX, currentY);
+    }
+    //currentX = 7;
+    //currentY = 7;
     enemyXs = [];
     enemyYs = [];
     checkpointCount = 0;
@@ -200,11 +203,15 @@ function getRandomMove(min, max) {
 }
 
 function isMoveValid(newX, newY) {
-    if (newX > 0 && newX < boardWidth - 1 &&
+    if (newX === 0 && newY === 0) {
+        return true;
+    } else if (newX > 0 && newX < boardWidth - 1 &&
         newY > 0 && newY < boardWidth - 1) {
         if (newX !== currentX && newY !== currentY) {
             if (!isEnemyHere(newX, newY)) {
-                if (!isStartHere(newX, newY) && !isEndHere(newX, newY) && !isCheckpointHere(newX, newY)) {
+                if (!isStartHere(newX, newY) &&
+                    !isEndHere(newX, newY) &&
+                    !isCheckpointHere(newX, newY)) {
                     return true;
                 }
             }
