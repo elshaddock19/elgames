@@ -36,7 +36,9 @@ var finalize = function () {
     if (!createdTimer) {
         timerID = PS.timerStart(80, myTimer);
         createdTimer = true;
+        PS.audioPlay("caverns", { path: "music/", loop: true, volume: 0.3 } );
     }
+
 
     // resets data from previous level
     reset(PS.ALL, PS.ALL);
@@ -258,6 +260,7 @@ function levelUp() {
 function restart() {
     PS.init();
     PS.audioPlay("fx_hoot");
+    PS.audioStop("caverns");
 
     //sends data point
     if (db && PS.dbValid(db)) {
@@ -289,6 +292,8 @@ function reset(x, y) {
     PS.borderColor(x, y);
     PS.data(x, y);
     PS.color(x, y, 175, 175, 175);
+
+
 }
 
 PS.init = function (system, options) {
@@ -304,7 +309,10 @@ PS.init = function (system, options) {
 
     playerBead(currentX, currentY);
 
-    if (db) {
+   PS.audioLoad("caverns",{path: "music/"});
+
+
+   if (db) {
         db = PS.dbInit(db, {login: finalize});
         if (db === PS.ERROR) {
             db = null;
@@ -312,6 +320,8 @@ PS.init = function (system, options) {
     } else {
         finalize();
     }
+
+
 };
 
 PS.keyDown = function (key, shift, ctrl, options) {
