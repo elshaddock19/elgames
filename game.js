@@ -43,8 +43,6 @@ var finalize = function () {
     if (level === 1) {
         playerBead(currentX, currentY);
     }
-    //currentX = 7;
-    //currentY = 7;
     enemyXs = [];
     enemyYs = [];
     checkpointCount = 0;
@@ -78,6 +76,8 @@ var finalize = function () {
     newEnemy(6, 4);
 
 };
+
+function endFade() {}
 
 function myTimer() {
     console.log("tick");
@@ -212,7 +212,9 @@ function isMoveValid(newX, newY) {
                 if (!isStartHere(newX, newY) &&
                     !isEndHere(newX, newY) &&
                     !isCheckpointHere(newX, newY)) {
-                    return true;
+                //    if (!isNextToPlayer) {
+                        return true;
+                //    }
                 }
             }
         }
@@ -229,6 +231,11 @@ function isEnemyHere(x, y) {
         }
     }
     return false;
+}
+
+function isNextToPlayer(x, y) {
+    return false;
+    // CHANGE to check 3x3 grid around player
 }
 
 function isStartHere(x, y) {
@@ -281,8 +288,6 @@ function reset(x, y) {
     PS.border(x, y, 0);
     PS.borderColor(x, y);
     PS.data(x, y);
-    // fade does not work ???
-    //PS.fade(x, y, 60);
     PS.color(x, y, 175, 175, 175);
 }
 
