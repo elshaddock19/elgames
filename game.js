@@ -12,7 +12,7 @@ var db = null;
 var level = 1;
 var maxLevel = 3;
 var boardWidth = 15;
-var currentX = 7;
+var currentX = 1;
 var currentY = 7;
 var createdTimer = false;
 var currentLevelEndX;
@@ -34,14 +34,13 @@ var timerID;
 
 var finalize = function () {
     if (!createdTimer) {
-        timerID = PS.timerStart(80, myTimer);
+        timerID = PS.timerStart(60, myTimer);
         createdTimer = true;
-        PS.audioPlay("caverns", { path: "music/", loop: true, volume: 0.3 } );
     }
 
-
     // resets data from previous level
-    reset(PS.ALL, PS.ALL);
+    playerBead(currentX, currentY);
+    resetBead(PS.ALL, PS.ALL);
     if (level === 1) {
         playerBead(currentX, currentY);
     }
@@ -51,35 +50,55 @@ var finalize = function () {
 
     // creates start, end, and checkpoints for each level
     if (level === 1) {
-        createCheckpoint(5, 5);
-        createEnd(14, 8);
+        createCheckpoint(7, 7);
+        createEnd(13, 7);
     } else if (level === 2) {
-        createCheckpoint(4, 8);
+        createCheckpoint(1, 9);
         createCheckpoint(8, 4);
         createEnd(14, 12);
+
+        // creates enemies
+        newEnemy(5, 3);
+
     } else if (level === 3) {
+        createCheckpoint(4, 13);
+        createCheckpoint(13, 3);
+        createEnd(2, 4);
+
+        // creates enemies
+        newEnemy(5, 3);
+        newEnemy(5, 2);
+        newEnemy(10, 10);
+        newEnemy(11, 10);
+        newEnemy(12, 10);
+        newEnemy(13, 10);
+
+    } else if (level === 4) {
         createCheckpoint(6, 7);
         createCheckpoint(4, 2);
         createCheckpoint(10, 11);
         createEnd(14, 1);
+
+        // creates enemies
+        newEnemy(4, 3);
+        newEnemy(5, 3);
+        newEnemy(11, 11);
+        newEnemy(11, 10);
+        newEnemy(12, 10);
+        newEnemy(13, 9);
+        newEnemy(14, 10);
+        newEnemy(7, 1);
+        newEnemy(8, 11);
+        newEnemy(8, 3);
+        newEnemy(6, 4);
+        newEnemy(6, 6);
+        newEnemy(1, 8);
+
     }
 
-    // creates enemies
-    newEnemy(5, 3);
-    newEnemy(5, 2);
-    newEnemy(10, 10);
-    newEnemy(11, 10);
-    newEnemy(12, 10);
-    newEnemy(13, 10);
-    newEnemy(14, 10);
-    newEnemy(7, 10);
-    newEnemy(8, 11);
-    newEnemy(8, 3);
-    newEnemy(6, 4);
+
 
 };
-
-function endFade() {}
 
 function myTimer() {
     console.log("tick");
@@ -132,9 +151,9 @@ function move(x, y) {
         // restarts level if player enters enemy bead
         if (PS.data(x, y) === ENEMY) {
             restart();
-        } else if (isPlayerAtEnd(x, y)) {   // checks if necessary num of checkpoints have been passed
+        } else if (isPlayerAtEnd(x, y)) {
             if (level === 1) {
-                if (checkpointCount === 1) {
+                if (checkpointCount === 1) {    // checks if necessary num of checkpoints have been passed
                     levelUp();
                 }
             } else if (level === 2) {
@@ -142,14 +161,17 @@ function move(x, y) {
                     levelUp();
                 }
             } else if (level === 3) {
+                if (checkpointCount === 2) {
+                    levelUp();
+                }
+            } else if (level === 4) {
                 if (checkpointCount === 3) {
                     win();
                 }
             }
         } else if (isPlayerAtCheckpoint(x, y)) {
-            console.log("checkpoint");
             checkpointCount++;
-            reset(x, y);
+            resetBead(x, y);
 
             // send data point
             if (db && PS.dbValid(db)) {
@@ -166,6 +188,8 @@ function move(x, y) {
 }
 
 function updateEnemyPosition(x, y, newX, newY) {
+    PS.data(newX, newY, ENEMY);
+    PS.data(x, y);
     PS.color(newX, newY, 250, 250, 250);
     PS.data(newX, newY, ENEMY);
     PS.scale(newX, newY, 50);
@@ -192,8 +216,11 @@ function newEnemy(x, y) {
 function moveEnemy(x, y) {
     xInc = getRandomMove(-1, 1);
     yInc = getRandomMove(-1, 1);
-    if (isMoveValid(x + xInc, y + yInc)) {
-        reset(x, y);
+    if (xInc === 0 && yInc === 0) {
+        resetBead(x, y);
+        updateEnemyPosition(x, y, x + xInc, y + yInc);
+    } else if (isMoveValid(x + xInc, y + yInc)) {
+        resetBead(x, y);
         updateEnemyPosition(x, y, x + xInc, y + yInc);
     } else {
         moveEnemy(x, y);
@@ -205,18 +232,16 @@ function getRandomMove(min, max) {
 }
 
 function isMoveValid(newX, newY) {
-    if (newX === 0 && newY === 0) {
-        return true;
-    } else if (newX > 0 && newX < boardWidth - 1 &&
+    if (newX > 0 && newX < boardWidth - 1 &&
         newY > 0 && newY < boardWidth - 1) {
         if (newX !== currentX && newY !== currentY) {
             if (!isEnemyHere(newX, newY)) {
                 if (!isStartHere(newX, newY) &&
                     !isEndHere(newX, newY) &&
                     !isCheckpointHere(newX, newY)) {
-                //    if (!isNextToPlayer) {
+                    if (!isNextToPlayer(newX, newY)) {
                         return true;
-                //    }
+                    }
                 }
             }
         }
@@ -236,8 +261,14 @@ function isEnemyHere(x, y) {
 }
 
 function isNextToPlayer(x, y) {
-    return false;
-    // CHANGE to check 3x3 grid around player
+    // checks 3x3 grid around player
+    return (x - 1 === currentX && y - 1 === currentY ||
+        x - 1 === currentX && y === currentY ||
+        x - 1 === currentX && y + 1 === currentY ||
+        x === currentX && y + 1 === currentY ||
+        x + 1 === currentX && y + 1 === currentY ||
+        x + 1 === currentX && y === currentY ||
+        x + 1  === currentX && y - 1 === currentY);
 }
 
 function isStartHere(x, y) {
@@ -258,9 +289,8 @@ function levelUp() {
 }
 
 function restart() {
-    PS.init();
+    finalize();
     PS.audioPlay("fx_hoot");
-    PS.audioStop("caverns");
 
     //sends data point
     if (db && PS.dbValid(db)) {
@@ -272,11 +302,10 @@ function restart() {
 
 function win() {
     PS.timerStop(timerID);
-    reset(PS.ALL, PS.ALL);
+    resetBead(PS.ALL, PS.ALL);
     PS.fade(PS.ALL, PS.ALL, 60);
-    PS.color(PS.ALL, PS.ALL, 255, 255, 255);
+    PS.color(PS.ALL, PS.ALL, 175, 175, 175);
     PS.audioPlay("fx_tada");
-    //PS.color(10, 10, 10);       // grid color same as bg color
 
     // sends data point
     if (db && PS.dbValid(db)) {
@@ -286,14 +315,12 @@ function win() {
     }
 }
 
-function reset(x, y) {
+function resetBead(x, y) {
+    PS.color(x, y, 175, 175, 175);
     PS.scale(x, y, 100);
     PS.border(x, y, 0);
-    PS.borderColor(x, y);
-    PS.data(x, y);
-    PS.color(x, y, 175, 175, 175);
-
-
+    PS.borderColor(x, y, 175, 175, 175);
+    PS.data(x, y, 0);
 }
 
 PS.init = function (system, options) {
@@ -309,10 +336,7 @@ PS.init = function (system, options) {
 
     playerBead(currentX, currentY);
 
-   PS.audioLoad("caverns",{path: "music/"});
-
-
-   if (db) {
+    if (db) {
         db = PS.dbInit(db, {login: finalize});
         if (db === PS.ERROR) {
             db = null;
@@ -320,8 +344,6 @@ PS.init = function (system, options) {
     } else {
         finalize();
     }
-
-
 };
 
 PS.keyDown = function (key, shift, ctrl, options) {
