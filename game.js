@@ -147,14 +147,12 @@ function move(x, y) {
     } else {
         // restarts level if player enters enemy bead
         if (PS.data(x, y) === ENEMY) {
-            restart();
-
             // send data point
             if (db && PS.dbValid(db)) {
-                PS.dbEvent(db, "gameover", true);
-                PS.dbSend(db, "bmoriarty", {discard: true});
-                db = null;
+                PS.dbEvent(db, "gameover", level);
             }
+
+            restart();
         } else if (isPlayerAtEnd(x, y)) {
             if (level === 1) {
                 if (checkpointCount === 1) {    // checks if necessary num of checkpoints have been passed
@@ -177,12 +175,11 @@ function move(x, y) {
             checkpointCount++;
             resetBead(x, y);
 
-            console.log("checkpoint");
+
             // send data point
             if (db && PS.dbValid(db)) {
-                PS.dbEvent(db, "gameover", true);
-                PS.dbSend(db, "bmoriarty", {discard: true});
-                db = null;
+                console.log("Checkpoint");
+                PS.dbEvent(db, "score", checkpointCount);
             }
         }
         playerBead(x, y);
