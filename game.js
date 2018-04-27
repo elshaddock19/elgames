@@ -7,7 +7,7 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
-var db = null;
+var db = "Onward";
 
 var level = 1;
 var maxLevel = 3;
@@ -95,9 +95,6 @@ var finalize = function () {
         newEnemy(1, 8);
 
     }
-
-
-
 };
 
 function myTimer() {
@@ -151,6 +148,13 @@ function move(x, y) {
         // restarts level if player enters enemy bead
         if (PS.data(x, y) === ENEMY) {
             restart();
+
+            // send data point
+            if (db && PS.dbValid(db)) {
+                PS.dbEvent(db, "gameover", true);
+                PS.dbSend(db, "bmoriarty", {discard: true});
+                db = null;
+            }
         } else if (isPlayerAtEnd(x, y)) {
             if (level === 1) {
                 if (checkpointCount === 1) {    // checks if necessary num of checkpoints have been passed
@@ -173,6 +177,7 @@ function move(x, y) {
             checkpointCount++;
             resetBead(x, y);
 
+            console.log("checkpoint");
             // send data point
             if (db && PS.dbValid(db)) {
                 PS.dbEvent(db, "gameover", true);
@@ -289,6 +294,8 @@ function levelUp() {
 }
 
 function restart() {
+    currentX = 1;
+    currentY = 1;
     finalize();
     PS.audioPlay("fx_hoot");
 
